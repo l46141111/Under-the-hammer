@@ -323,6 +323,7 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 .setrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
 .setrow p{margin:2px 0 0;font-size:13px;color:var(--ink-soft)}
 .fine{font-size:12.5px;color:var(--ink-soft);margin:12px 0 0}
+.tnotes{margin:0 0 4px;padding-left:1.2em}.tnotes li{margin:2px 0}
 
 @media (max-width:520px){
   .panel{padding:12px 10px}
@@ -730,7 +731,7 @@ h1{font-size:24px;letter-spacing:.08em}
 <div class="modal" id="travelModal" hidden role="dialog" aria-modal="true" aria-labelledby="travelH">
   <div class="msheet">
     <div class="mhead"><h2 id="travelH">移動・出國</h2><button class="btn" data-close type="button">關閉</button></div>
-    <p class="fine" style="margin-top:0">在台灣跑產地，只要付車資和住宿。出國買的是來回機票，回台灣不用再花錢；不過待在國外的每一天都要付住宿費，在同一個國家換地方只要付車資。你人在國外，博物館一樣照常開門。</p>
+    <ul class="fine tnotes"><li>在台灣換產地，付車資和住宿就好。</li><li>出國買的是來回機票，回台灣不必再付錢。</li><li>待在國外每晚要付住宿；同一個國家裡換地方，只付車資。</li><li>你出國的這段時間，博物館照常營業。</li></ul>
     <div id="travelBody"></div>
   </div>
 </div>
