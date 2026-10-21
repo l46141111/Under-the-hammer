@@ -77,8 +77,10 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);padding-block:6px 8px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--rule)}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:700px){.stats{grid-template-columns:minmax(0,1.05fr) minmax(0,1.4fr) minmax(0,.95fr) minmax(0,.9fr)}}
 .stat{min-width:0;display:flex;flex-direction:column;padding:6px 10px;background:var(--sheet);border:1px solid var(--rule);border-radius:4px}
 .daystat .dk{display:flex;align-items:center;gap:3px}
+.stat.daystat .dk{letter-spacing:0}
 .daystat .dk #dayK{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .dwx{flex:none;width:20px;height:20px;margin:-4px 0;background:center/contain no-repeat}
 .dayrow{display:flex;align-items:center;gap:6px;margin-top:3px;min-width:0}
@@ -3040,7 +3042,7 @@ function staffTick(t){
 }
 function hud(t){
   E.money.textContent=S.money>=1e4?(S.money/1e4).toFixed(S.money>=1e6?0:1)+'萬':Math.floor(S.money).toLocaleString('zh-TW');
-  const dk=`<span class="wxk">第${yearOf(S.day)}年 </span>${SEASONS[seasonOf(S.day)]} ${WD[wd()]}<span class="wxk"> ${WX[S.wx].name}</span>`;if(E.dayK.innerHTML!==dk)E.dayK.innerHTML=dk;
+  const dk=`<span class="wxk">第${yearOf(S.day)}年 </span>${SEASONS[seasonOf(S.day)]}${dayInSeason(S.day)}日 ${WD[wd()]}<span class="wxk"> ${WX[S.wx].name}</span>`;if(E.dayK.innerHTML!==dk)E.dayK.innerHTML=dk;
   E.todayV.textContent=`${S.todayV} 人`;
   const w=`${dateTxt(S.day)} · ${S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title}`;if(E.where.textContent!==w)E.where.textContent=w;
   drawDayClock(t);
