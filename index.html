@@ -400,6 +400,7 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 #calStat{cursor:pointer;position:relative}
 #calStat:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .lastday{margin-left:8px;font-size:12px;font-weight:400;color:var(--warn)}
+.calhd{margin:0 0 6px;font-size:16px}
 .caldot{position:absolute;top:-5px;right:-5px;width:10px;height:10px;background:#E5533D;border:2px solid var(--sheet)}
 #calBtn{position:relative}
 @media (max-width:420px){.mast-actions{gap:6px}.mast-actions .btn{padding:5px 7px;gap:4px}}
@@ -640,7 +641,7 @@ h1{font-size:24px;letter-spacing:.08em}
             <li>從地表或挖開的地方，往旁邊、往下挖</li>
             <li>有化石紋路或礦物閃光的岩塊較常有東西</li>
             <li>斜裂縫是節理，會連隔壁一起震開</li>
-            <li>敲到富集層，接下來 8 鎚都不會碎</li>
+            <li>偶爾會敲到富集層，接下來 8 鎚收穫變多</li>
           </ul>
           <div class="factions"><span>標本箱 <b class="num" id="boxCountF">0/24</b></span><button class="btn" id="newOc" type="button">換一片露頭</button><button class="btn" type="button" data-rest>收工，休息到明天</button></div>
         </div>
@@ -1080,7 +1081,7 @@ const LINES={
   tech:'修復技師上工了。普通和少見的化石，他會自己從工作台上拿去清修；稀有的會等你交代。',
   eshop:'東西上架了。網路上的買家來自各地，什麼時候賣出去要看運氣，也看你開的價錢。',
   restClose:'你收工回家睡了一覺，隔天一早體力恢復了。不過今天剩下的時間也跟著跳過：博物館提早閉館，還沒進場的訪客不會來，網路商店今天也不會再有人下單。如果不收工，博物館會一直開到傍晚六點，然後自然進入隔天。',
-  fever:'你敲到一段特別豐富的地層！接下來 8 鎚，敲下來的岩塊都不會碎，裡面有化石或礦物的機會大約是平常的 2.5 倍。',
+  fever:'你敲到一段特別豐富的地層！接下來 8 鎚，敲下來的岩塊都能完整帶走，裡面有化石或礦物的機會大約是平常的 2.5 倍。',
   cueHint:'裂縫透出的光色越暖，裡面越可能有好東西。紅光和彩虹光最值得期待，但也不是每次都中。',
   sth:'Sharktooth Hill 的骨層大約在 1500 萬年前形成，花了約 70 萬年慢慢堆積，平均每平方公尺有 200 件化石。這裡是私人採石場，付費就能來挖。',
   hellcreek:'在美國，私人土地上挖到的化石屬於地主。你跟牧場主人談好了條件，在這片 Hell Creek 層開挖。這是白堊紀最末期的河流沉積，三角龍和暴龍生活的年代。',
@@ -1361,6 +1362,7 @@ function normalize(){
   const f=fresh();
   for(const k of Object.keys(f)) if(S[k]===undefined) S[k]=f[k];
   S.upg=Object.assign(f.upg,S.upg); S.stats=Object.assign(f.stats,S.stats);
+  ['bigs','plat','cal','exHist'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[];});if(S.wdv!==2){S.cal=[];S.calTo=0;S.wdv=2;}if(S.sdv!==2){if(S.ex&&S.ex.st==='signed'){S.ex=null;if(Array.isArray(S.cardNotes))S.cardNotes.push({t:'一季改成四週，特展檔期也跟著調整了，原本的報名已經取消，可以重新報名。',c:'warn'});}S.sdv=2;}if(typeof S.star!=='number'||S.star<1)S.star=1;if(S.dig&&!SITES[S.dig.site])S.dig=null;
   ['grid','cases','box','arr'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[];});
   while(S.grid.length<gridSize()) S.grid.push(null);
   while(S.cases.length<caseN()) S.cases.push(null);
@@ -2307,7 +2309,6 @@ function jadeLotHTML(l,k){
 /* 賭石筆記 */
 function jNoteAdd(it,fake,v){
   if(!Array.isArray(S.jnote))S.jnote=[];
-  ['bigs','plat','cal','exHist'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[];});if(S.wdv!==2){S.cal=[];S.calTo=0;S.wdv=2;}if(typeof S.star!=='number'||S.star<1)S.star=1;if(S.dig&&!SITES[S.dig.site])S.dig=null;
   S.jnote.push({d:S.day,k:it.jk,f:it.jf,tl:it.jtl,tc:S.upg.torch?it.jtc:null,r:fake?it.jst:it.jst.slice(),p:it.paid||0,c:it.cutCost||0,v:Math.round(v)});
   if(S.jnote.length>150)S.jnote=S.jnote.slice(-150);
 }
@@ -2333,7 +2334,7 @@ function renderJnote(){
     if(li)h+=`<h3 class="jh">${g}・切過 ${G.length} 顆</h3><ul class="jlines">${li}</ul>`;
   });
   h+=`<h3 class="jh">最近切的幾顆</h3><ol class="jrec">${L.slice(-12).reverse().map(e=>{const c=e.p+e.c,d=e.v-c,ft=jFeatList(e.k,e.f,e.tl).concat(jTorchList(e.tc,e.k).map(x=>x.replace(/^打燈：/,'打燈時')));
-    return `<li><span class="jd">第 ${e.d} 天</span>${JK[e.k]}，${ft.join('、')}。切開來：<b class="${d>=0?'jup':'jdn'}">${jNoteRes(e.r)}</b>。花了 ${nt(c)}，值 ${nt(e.v)}，${d>=0?`賺 ${nt(d)}`:`虧 ${nt(-d)}`}。</li>`;}).join('')}</ol>`;
+    return `<li><span class="jd">${dayName(e.d)}</span>${JK[e.k]}，${ft.join('、')}。切開來：<b class="${d>=0?'jup':'jdn'}">${jNoteRes(e.r)}</b>。花了 ${nt(c)}，值 ${nt(e.v)}，${d>=0?`賺 ${nt(d)}`:`虧 ${nt(-d)}`}。</li>`;}).join('')}</ol>`;
   E.jnoteBody.innerHTML=h;
 }
 function openJnote(){renderJnote();openModal(E.jnoteModal);}
@@ -2353,8 +2354,10 @@ const WX={
   snow:{name:'下雪',full:'下雪',desc:'下雪了，採集場今天關閉。',stam:0,vis:1,closed:true},
   gale:{name:'強風',full:'強風大浪',desc:'風浪很大，海灘太危險。暴風雨過後，海灘上常會多出新的化石。',stam:0,vis:1,closed:true}
 };
-const SEASONS=['春','夏','秋','冬'],SEASON_DAYS=15;
-const seasonOf=d=>Math.floor((d-1)/SEASON_DAYS)%4,dayInSeason=d=>(d-1)%SEASON_DAYS+1;
+const SEASONS=['春','夏','秋','冬'],SEASON_DAYS=28,YEAR_DAYS=SEASON_DAYS*4;
+const seasonOf=d=>Math.floor((d-1)/SEASON_DAYS)%4,dayInSeason=d=>(d-1)%SEASON_DAYS+1,yearOf=d=>Math.floor((d-1)/YEAR_DAYS)+1;
+// 完整日期：「第 1 年春天第 3 天」
+const dateTxt=d=>`第 ${yearOf(d)} 年${SEASONS[seasonOf(d)]}天第 ${dayInSeason(d)} 天`;
 const SEASON_NOTE=['春天到了。天氣舒服，很適合出野外；春末會進入梅雨季。德國的開放採石場也重新開放了。','夏天到了。午後雷陣雨和颱風會變多，夏天是颱風最多的季節。緬甸也進入雨季。','秋天到了。剛入秋還會有颱風，之後天氣越來越穩定。','冬天到了。東北季風帶來寒流和雨；猶他州會下雪，採集場常常關閉；德國的開放採石場也休息到春天。'];
 const WX_TBL={
   tw:[[['sun',.35],['cloud',.25],['plum',.2],['storm',.1],['hot',.05],['cold',.03],['typhoon',.02]],
@@ -2519,7 +2522,7 @@ function resolvePress(){
 let dayOpen=false,wxAnim=0;
 function showDayCard(){
   S.cardPending=false;dayOpen=true;const W=WX[S.wx];
-  E.dayDate.textContent=`第 ${S.day} 天 · ${SEASONS[seasonOf(S.day)]}天第 ${dayInSeason(S.day)} 天 · ${WD[wd()]} · ${S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title}`;
+  E.dayDate.textContent=`${dateTxt(S.day)} · ${WD[wd()]} · ${S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title}`;
   E.dayH.textContent=S.day===1?'開幕的第一天':'新的一天';
   E.wxName.textContent=W.full;E.wxDesc.textContent=W.desc;
   const li=[];
@@ -2543,7 +2546,7 @@ function renderDayRem(){
     if(S.ex&&S.ex.k===up.k&&S.ex.st==='signed'){const e=EXH_BY[S.ex.id],miss=exReq(e).filter(r=>r.v<r.n);
       h=`${icn('r_ex','rqi')}<div><b>特展提醒</b><span>再三天（${dayName(up.start)}）「${e.name}」就要開幕了。${miss.length?`還差${miss.map(r=>r.bool?r.s:`${r.s}（現在 ${r.v}）`).join('、')}。`:'需要的展品都已經在展示櫃裡了。'}</span></div>`;}
     else if(!(S.ex&&S.ex.st==='on')){const o=exOptions(up.k);
-      h=`${icn('r_ex','rqi')}<div><b>特展提醒</b><span>再三天（${dayName(up.start)}）就是這一季的特展檔期，這次有「${o.map(e=>e.name).join('」和「')}」可以辦。博物館那邊還在等你決定要不要報名。</span></div>`;}
+      h=`${icn('r_ex','rqi')}<div><b>特展提醒</b><span>再三天（${dayName(up.start)}）就是下一檔特展的檔期，這次有「${o.map(e=>e.name).join('」和「')}」可以辦。博物館那邊還在等你決定要不要報名。</span></div>`;}
   }
   el.innerHTML=h;el.hidden=!h;
 }
@@ -2884,7 +2887,7 @@ function startDay(){
   // 開幕第一天一定是晴天
   const se=seasonOf(S.day);S.wx=S.day===1?'sun':pickW((WX_TBL[S.region]||WX_TBL.tw)[se]);const W=WX[S.wx];
   S.wxHome=S.region==='tw'?S.wx:pickW(WX_TBL.tw[se]);const WH=WX[S.wxHome];
-  if(dayInSeason(S.day)===1&&S.day>1)S.cardNotes.push({t:SEASON_NOTE[se],c:'good'});
+  if(dayInSeason(S.day)===1&&S.day>1){if(se===0)S.cardNotes.push({t:`第 ${yearOf(S.day)} 年開始了。`,c:'good'});S.cardNotes.push({t:SEASON_NOTE[se],c:'good'});}
   S.bonus=1;if(S.region==='tw'&&S.wxPrevReg==='tw'){if(S.wxPrev==='storm')S.bonus=1.3;else if(S.wxPrev==='plum'||S.wxPrev==='rain')S.bonus=1.2;else if(S.wxPrev==='typhoon')S.bonus=1.8;}
   else if(S.region==='uk'&&S.wxPrevReg==='uk'){if(S.wxPrev==='gale')S.bonus=1.8;else if(S.wxPrev==='rain')S.bonus=1.2;}
   if(S.site&&siteShut())S.cardNotes.push({t:'採石場冬天休息，春天才會再開；Eichstätt 的博物館商店也一樣。今天可以先回台灣。',c:'warn'});
@@ -3034,9 +3037,9 @@ function staffTick(t){
 }
 function hud(t){
   E.money.textContent=S.money>=1e4?(S.money/1e4).toFixed(S.money>=1e6?0:1)+'萬':Math.floor(S.money).toLocaleString('zh-TW');
-  const dk=`${SEASONS[seasonOf(S.day)]} ${WD[wd()]}<span class="wxk"> ${WX[S.wx].name}</span>`;if(E.dayK.innerHTML!==dk)E.dayK.innerHTML=dk;
+  const dk=`<span class="wxk">第${yearOf(S.day)}年 </span>${SEASONS[seasonOf(S.day)]} ${WD[wd()]}<span class="wxk"> ${WX[S.wx].name}</span>`;if(E.dayK.innerHTML!==dk)E.dayK.innerHTML=dk;
   E.todayV.textContent=`${S.todayV} 人`;
-  const w=`第 ${S.day} 天 · ${S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title}`;if(E.where.textContent!==w)E.where.textContent=w;
+  const w=`${dateTxt(S.day)} · ${S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title}`;if(E.where.textContent!==w)E.where.textContent=w;
   drawDayClock(t);
   E.rep.textContent=Math.floor(S.rep);E.repBar.style.width=S.rep+'%';
   const sk='★'+S.star;if(E.starK.textContent!==sk)E.starK.textContent=sk;const cs=!calSoon();if(E.calDot.hidden!==cs)E.calDot.hidden=cs;
@@ -3364,7 +3367,7 @@ function scheduleAhead(){
   S.calTo=Math.max(S.calTo||0,to);S.cal=S.cal.filter(e=>e.d>=S.day);
 }
 const calSoon=()=>(S.cal||[]).some(e=>e.d>=S.day&&e.d<=S.day+3)||(S.ex&&S.ex.st==='signed'&&S.ex.start-S.day<=3&&S.ex.start>=S.day);
-const dayName=d=>`第 ${d} 天`,wdOf=d=>(d-1)%7;
+const dayName=d=>`${yearOf(d)!==yearOf(S.day)?`第 ${yearOf(d)} 年`:''}${SEASONS[seasonOf(d)]}天第 ${dayInSeason(d)} 天`,wdOf=d=>(d-1)%7;
 function calEvText(e,cell){return e.type==='school'?`校外教學 ${e.n} 人${cell&&e.want?`<br>想看${SETS[e.want].name}`:''}`:'記者採訪';}
 function prepHint(e){
   if(e.type==='school'){const c=themeCount(e.want),nm=SETS[e.want].name;return c>=2?`老師說小朋友最想看${nm}。現在展出 ${c} 件，應該夠他們看了。`:c?`老師說小朋友最想看${nm}。現在只展出 1 件，再多一件會更好。`:`老師說小朋友最想看${nm}，可是現在一件都沒有展出。`;}
@@ -3373,13 +3376,13 @@ function prepHint(e){
 }
 function renderCal(){
   const el=E.calBody;if(!el)return;scheduleAhead();
-  const mon=S.day-wdOf(S.day);let h=`<div class="calg">${WD.map(w=>`<div class="calw">${w.slice(1)}</div>`).join('')}`;
+  const mon=S.day-wdOf(S.day);let h=`<p class="calhd">第 ${yearOf(S.day)} 年 · ${SEASONS[seasonOf(S.day)]}天</p><div class="calg">${WD.map(w=>`<div class="calw">${w.slice(1)}</div>`).join('')}`;
   for(let d=mon;d<mon+14;d++){if(d<1){h+='<div class="cald past"></div>';continue;}
     const ev=(S.cal||[]).filter(e=>e.d===d),sl=exSlotOf(d),inEx=d>=sl.start&&d<=sl.end,w=wdOf(d),past=d<S.day;
     const chips=past?[]:ev.map(e=>`<span class="cc ${e.type}">${e.type==='school'?'校外教學':'採訪'}</span>`);
     if(inEx&&!past){const mine=S.ex&&S.ex.k===sl.k&&(S.ex.st==='signed'||S.ex.st==='on'||S.ex.st==='done');chips.push(`<span class="cc ex${mine?' mine':''}">${d===sl.start?'特展開幕':'特展'}</span>`);}
     if(w>=5&&!past)chips.push('<span class="cc wk">玉市</span>');
-    h+=`<div class="cald${d===S.day?' today':''}${w>=5?' we':''}${past?' past':''}"><div class="cdh"><b>${d===S.day?'今天':d}</b></div>${chips.join('')}</div>`;}
+    h+=`<div class="cald${d===S.day?' today':''}${w>=5?' we':''}${past?' past':''}"><div class="cdh"><b>${d===S.day?'今天':dayInSeason(d)===1?SEASONS[seasonOf(d)]+'天':dayInSeason(d)}</b></div>${chips.join('')}</div>`;}
   h+='</div>';
   const up=(S.cal||[]).filter(e=>e.d>=S.day).sort((a,b)=>a.d-b.d);
   h+=`<h3 class="jh">接下來的活動</h3>${up.length?`<ul class="calup">${up.map(e=>`<li><b>${e.d===S.day?'今天':`${dayName(e.d)}（${WD[wdOf(e.d)]}，${e.d-S.day} 天後）`}</b>${calEvText(e)}<span>${prepHint(e)}</span></li>`).join('')}</ul>`:'<p class="fine">這兩週還沒有排校外教學或採訪。</p>'}`;
@@ -3388,7 +3391,7 @@ function renderCal(){
 }
 function openCal(){renderCal();openModal(E.calModal);}
 
-/* ================= 特展：每季固定檔期，為期 7 天 ================= */
+/* ================= 特展：每一季的第 2、4 週（週一到週日），為期 7 天 ================= */
 const EXT=[{name:'入門',reward:20000,rep:4,boost:1.5},{name:'進階',reward:50000,rep:6,boost:1.8},{name:'精選',reward:120000,rep:8,boost:2.2},{name:'大師',reward:300000,rep:12,boost:2.8}];
 const EXH=[
   {id:'e_urchin',tier:0,name:'台灣海膽展',set:'urchin',n:3,sp:1,blurb:'台灣的中新世和更新世地層裡，有很多種海膽化石。'},
@@ -3405,9 +3408,9 @@ const EXH=[
   {id:'e_dino',tier:3,name:'恐龍時代',set:'hellcreek',n:4,sp:3,need:['big_trike','trex'],blurb:'白堊紀最後的日子：三角龍、暴龍和牠們的鄰居。'},
   {id:'e_sea',tier:3,name:'海洋巨獸',set:'sthset',n:4,sp:3,need:['big_whale','megalodon'],blurb:'一千五百萬年前的加州外海，鯨和巨齒鯊。'}];
 const EXH_BY=Object.fromEntries(EXH.map(e=>[e.id,e]));
-const EX_START=6,EX_LEN=7;
-const exSlotOf=d=>{const k=Math.floor((d-1)/SEASON_DAYS),s=k*SEASON_DAYS+EX_START;return{k,start:s,end:s+EX_LEN-1};};
-const exSlotK=k=>{const s=k*SEASON_DAYS+EX_START;return{k,start:s,end:s+EX_LEN-1};};
+const EX_PERIOD=14,EX_START=8,EX_LEN=7;
+const exSlotOf=d=>{const k=Math.floor((d-1)/EX_PERIOD),s=k*EX_PERIOD+EX_START;return{k,start:s,end:s+EX_LEN-1};};
+const exSlotK=k=>{const s=k*EX_PERIOD+EX_START;return{k,start:s,end:s+EX_LEN-1};};
 function exUpcoming(){const c=exSlotOf(S.day);return S.day<c.start?c:exSlotK(c.k+1);}
 function exOptions(k){
   const T=Math.max(0,Math.min(3,S.star-1)),L=t=>EXH.filter(e=>e.tier===t),a=L(T)[(k*5+1)%L(T).length];
@@ -3434,7 +3437,7 @@ function exHTML(compact){
   if(S.ex&&S.ex.st==='on'){const e=EXH_BY[S.ex.id];h+=`<p class="exnow">特展正在展出（${dayName(S.ex.start)}到${dayName(S.ex.end)}，今天是第 ${S.day-S.ex.start+1} 天）。</p>`+exCardOne(e,S.ex,'on');}
   const up=exUpcoming(),mine=S.ex&&S.ex.k===up.k&&S.ex.st==='signed';
   const opts=exOptions(up.k);
-  h+=`<p class="exnext">下一檔特展檔期是<b>${dayName(up.start)}到${dayName(up.end)}</b>，再 ${up.start-S.day} 天開幕。每一季的第 ${EX_START} 到第 ${EX_START+EX_LEN-1} 天都是特展檔期。</p>`;
+  h+=`<p class="exnext">下一檔特展檔期是<b>${dayName(up.start)}到${dayName(up.end)}</b>，再 ${up.start-S.day} 天開幕。每一季的第 2 週和第 4 週（週一到週日）是特展檔期。</p>`;
   if(mine)h+=exCardOne(EXH_BY[S.ex.id],up,'mine');
   else h+=`<div class="exopts">${opts.map(e=>exCardOne(e,up,S.ex&&S.ex.st==='on'?'view':'pick')).join('')}</div>`;
   if(!compact)h+=`<p class="fine">到目前為止辦過 ${S.exDone||0} 檔特展。博物館的星星越多，接得到的特展越大，贊助也越多。</p>`;
@@ -3516,7 +3519,7 @@ function freezeAway(){
 }
 function renderPause(){
   const p=!!(S&&S.pausedAt),h=document.getElementById('pauseH');if(h)h.textContent=p&&S.autoPause?'歡迎回來':'暫停中';E.pauseov.hidden=!p;E.pauseBtn.innerHTML=`<i class="hico ${p?'i-play':'i-pause'}" aria-hidden="true"></i>${p?'繼續':'暫停'}`;E.pauseBtn.setAttribute('aria-pressed',String(p));
-  if(p){E.pauseInfo.textContent=`第 ${S.day} 天 · ${SEASONS[seasonOf(S.day)]}天 · ${E.dayTime.textContent||''} · 經費 ${nt(S.money)}`;}
+  if(p){E.pauseInfo.textContent=`${dateTxt(S.day)} · ${E.dayTime.textContent||''} · 經費 ${nt(S.money)}`;}
   try{ambUpdate();}catch(e){}
 }
 /* 存檔欄位、匯出匯入 */
@@ -3527,14 +3530,14 @@ function renderSaveUI(){
   if(!E.slots)return;
   E.autoSaveTxt.innerHTML=storageOK&&EPH?`<b class="warn">${EPH_TXT}</b>改到遊戲網站 <a href="${SITE_URL}" target="_blank" rel="noopener">${SITE_TXT}</a> 玩，存檔就會保留。想把現在的進度帶過去，先用下面的「匯出」複製代碼，到網站上再「匯入」。`:storageOK?`進度每 5 秒自動存在這個瀏覽器裡。${lastSave?`上次自動存檔：${realTxt(Date.now()-(now()-lastSave))}。`:''}`:'<b class="warn">這個瀏覽器不能自動存檔，關掉頁面進度就會不見。</b>記得用下面的「匯出」把代碼存起來。';
   E.slots.innerHTML=[1,2,3].map(k=>{const m=storageOK?slotMeta(k):null;
-    return `<div class="slotrow"><div><b>存檔 ${k}</b><p>${m?`第 ${m.day} 天 · ${nt(m.money)} · 存於 ${realTxt(m.real)}`:'（空的）'}</p></div><div class="xbtns"><button class="btn" type="button" data-ssave="${k}"${storageOK?'':' disabled'}>存到這裡</button><button class="btn" type="button" data-sload="${k}"${m?'':' disabled'}>讀取</button></div></div>`;}).join('');
+    return `<div class="slotrow"><div><b>存檔 ${k}</b><p>${m?`${dateTxt(m.day)} · ${nt(m.money)} · 存於 ${realTxt(m.real)}`:'（空的）'}</p></div><div class="xbtns"><button class="btn" type="button" data-ssave="${k}"${storageOK?'':' disabled'}>存到這裡</button><button class="btn" type="button" data-sload="${k}"${m?'':' disabled'}>讀取</button></div></div>`;}).join('');
 }
 function saveSlot(k){try{localStorage.setItem(slotKey(k),JSON.stringify({real:Date.now(),game:now(),day:S.day,money:Math.floor(S.money),s:S}));toast(`已經存到「存檔 ${k}」。`);sfx.take();}catch(e){toast('存檔失敗：瀏覽器的儲存空間可能滿了。');}renderSaveUI();}
 /* 讀進來的進度從存檔當下的時間接著算（先暫停，按繼續才開始） */
 function loadState(s,game){
   if(!s||s.v!==2){toast('這份存檔讀不出來。');return false;}
   s.pausedAt=Date.now();s.pauseTotal=Date.now()-(game||s.lastSeen||Date.now());
-  useState(s);save();closeModal(E.setModal);toast(`讀取完成：第 ${S.day} 天。按「繼續」開始。`);return true;
+  useState(s);save();closeModal(E.setModal);toast(`讀取完成：${dateTxt(S.day)}。按「繼續」開始。`);return true;
 }
 function loadSlot(k){const m=slotMeta(k);if(!m){toast('這一格是空的。');return;}loadState(m.s,m.game);}
 const b64=buf=>{const u=buf instanceof Uint8Array?buf:new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
@@ -3556,7 +3559,7 @@ async function parseSave(txt){
 async function showExport(){
   E.xpanel.hidden=false;E.xpanel.innerHTML='<p class="fine">產生代碼中……</p>';
   const code=await exportCode();
-  E.xpanel.innerHTML=`<p class="fine">這段代碼就是你目前的進度（第 ${S.day} 天）。複製起來存好，在別的瀏覽器或裝置按「匯入」貼上，就能接著玩。</p><textarea class="xcode" id="xcode" rows="4" readonly>${code}</textarea><div class="xbtns"><button class="btn primary" type="button" data-x="copy">複製代碼</button>${DL||TOP?'<button class="btn" type="button" data-x="file">下載存檔檔案</button>':''}</div>`;
+  E.xpanel.innerHTML=`<p class="fine">這段代碼就是你目前的進度（${dateTxt(S.day)}）。複製起來存好，在別的瀏覽器或裝置按「匯入」貼上，就能接著玩。</p><textarea class="xcode" id="xcode" rows="4" readonly>${code}</textarea><div class="xbtns"><button class="btn primary" type="button" data-x="copy">複製代碼</button>${DL||TOP?'<button class="btn" type="button" data-x="file">下載存檔檔案</button>':''}</div>`;
 }
 function showImport(){
   E.xpanel.hidden=false;
