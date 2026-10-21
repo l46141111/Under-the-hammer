@@ -403,6 +403,7 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 #calStat:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .lastday{margin-left:8px;font-size:12px;font-weight:400;color:var(--warn)}
 .calhd{margin:0 0 6px;font-size:16px}
+.exfail{margin:0 0 8px;padding:6px 10px;border-left:3px solid var(--warn);color:var(--warn);font-size:16px}
 .caldot{position:absolute;top:-5px;right:-5px;width:10px;height:10px;background:#E5533D;border:2px solid var(--sheet)}
 #calBtn{position:relative}
 @media (max-width:420px){.mast-actions{gap:6px}.mast-actions .btn{padding:5px 7px;gap:4px}}
@@ -1364,7 +1365,7 @@ function normalize(){
   const f=fresh();
   for(const k of Object.keys(f)) if(S[k]===undefined) S[k]=f[k];
   S.upg=Object.assign(f.upg,S.upg); S.stats=Object.assign(f.stats,S.stats);
-  ['bigs','plat','cal','exHist'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[];});if(S.wdv!==2){S.cal=[];S.calTo=0;S.wdv=2;}if(S.sdv!==2){if(S.ex&&S.ex.st==='signed'){S.ex=null;if(Array.isArray(S.cardNotes))S.cardNotes.push({t:'一季改成四週，特展檔期也跟著調整了，原本的報名已經取消，可以重新報名。',c:'warn'});}S.sdv=2;}if(typeof S.star!=='number'||S.star<1)S.star=1;if(S.dig&&!SITES[S.dig.site])S.dig=null;
+  ['bigs','plat','cal','exHist'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[];});if(S.wdv!==2){S.cal=[];S.calTo=0;S.wdv=2;}if(S.sdv!==2){if(S.ex&&S.ex.st==='signed'){S.ex={k:-1,id:S.ex.id,st:'fail',start:S.day,end:S.day,why:'一季改成四週，特展檔期跟著調整，原本的報名被取消了。'};if(Array.isArray(S.cardNotes))S.cardNotes.push({t:'一季改成四週，特展檔期也跟著調整了，原本的報名已經取消，可以重新報名。',c:'warn'});}S.sdv=2;}if(typeof S.star!=='number'||S.star<1)S.star=1;if(S.dig&&!SITES[S.dig.site])S.dig=null;
   ['grid','cases','box','arr'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[];});
   while(S.grid.length<gridSize()) S.grid.push(null);
   while(S.cases.length<caseN()) S.cases.push(null);
@@ -3440,6 +3441,7 @@ function exCardOne(e,slot,mode){
 function exHTML(compact){
   let h='';
   if(S.ex&&S.ex.st==='on'){const e=EXH_BY[S.ex.id];h+=`<p class="exnow">特展正在展出（${dayName(S.ex.start)}到${dayName(S.ex.end)}，今天是第 ${S.day-S.ex.start+1} 天）。</p>`+exCardOne(e,S.ex,'on');}
+  if(S.ex&&S.ex.st==='fail'&&EXH_BY[S.ex.id]&&S.day-S.ex.end<=10)h+=`<p class="exfail">上一檔「${EXH_BY[S.ex.id].name}」沒有辦成。${S.ex.why||'開幕那天展品沒有到齊，或展期中展品被撤下。'}</p>`;
   const up=exUpcoming(),mine=S.ex&&S.ex.k===up.k&&S.ex.st==='signed';
   const opts=exOptions(up.k);
   h+=`<p class="exnext">下一檔特展檔期是<b>${dayName(up.start)}到${dayName(up.end)}</b>，再 ${up.start-S.day} 天開幕。每一季的第 2 週和第 4 週（週一到週日）是特展檔期。</p>`;
@@ -3461,13 +3463,13 @@ function exMorning(){
   const x=S.ex;if(!x)return;
   if(x.st==='signed'&&S.day===x.start){if(exMet(EXH_BY[x.id])){x.st='on';S.cardNotes.push({t:`特展「${EXH_BY[x.id].name}」今天開幕！展期 ${EX_LEN} 天。`,c:'good'});}
     else S.cardNotes.push({t:`特展「${EXH_BY[x.id].name}」今天開幕，可是展品還沒到齊。趕在今天閉館前補上，還來得及。`,c:'warn'});}
-  else if(x.st==='signed'&&S.day>x.start){x.st='fail';}
+  else if(x.st==='signed'&&S.day>x.start){x.st='fail';x.why='開幕日已經過了，這一檔沒有開幕。';S.cardNotes.push({t:`特展「${EXH_BY[x.id].name}」的開幕日已經過了，這一檔沒有辦成。`,c:'warn'});}
 }
 function exEvening(){
   const x=S.ex;if(!x)return;const e=EXH_BY[x.id],T=EXT[e.tier];
-  if(x.st==='signed'&&S.day===x.start){if(exMet(e)){x.st='on';S.cardNotes.push({t:`特展「${e.name}」補齊展品，順利開幕了。`,c:'good'});}else{x.st='fail';S.rep=clamp(S.rep-2,0,100);S.cardNotes.push({t:`特展「${e.name}」的展品沒有到齊，這一檔只好取消，口碑受了點影響。`,c:'warn'});return;}}
+  if(x.st==='signed'&&S.day===x.start){if(exMet(e)){x.st='on';S.cardNotes.push({t:`特展「${e.name}」補齊展品，順利開幕了。`,c:'good'});}else{x.st='fail';x.why=`開幕那天展品沒有到齊：${exReq(e).filter(r=>r.v<r.n).map(r=>r.s).join('、')}。`;S.rep=clamp(S.rep-2,0,100);S.cardNotes.push({t:`特展「${e.name}」的展品沒有到齊，這一檔只好取消，口碑受了點影響。`,c:'warn'});return;}}
   if(x.st!=='on')return;
-  if(!exMet(e)){x.st='fail';S.rep=clamp(S.rep-3,0,100);S.cardNotes.push({t:`特展「${e.name}」的展品被撤下，展覽提前結束，贊助也落空了。`,c:'warn'});return;}
+  if(!exMet(e)){x.st='fail';x.why=`展期中展品被撤下，少了：${exReq(e).filter(r=>r.v<r.n).map(r=>r.s).join('、')}。`;S.rep=clamp(S.rep-3,0,100);S.cardNotes.push({t:`特展「${e.name}」的展品被撤下，展覽提前結束，贊助也落空了。`,c:'warn'});return;}
   if(S.day>=x.end){x.st='done';S.exDone=(S.exDone||0)+1;S.money+=T.reward;S.stats.earned+=T.reward;S.rep=clamp(S.rep+T.rep,0,100);
     (S.exHist=S.exHist||[]).push({id:x.id,day:S.day});
     S.cardNotes.push({t:`特展「${e.name}」圓滿結束！贊助單位撥下 ${nt(T.reward)}，口碑 +${T.rep}。`,c:'good'});}
