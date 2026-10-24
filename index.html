@@ -3520,7 +3520,7 @@ function exEvening(){
 
 /* ================= 回報問題 ================= */
 // REPORT_URL：Google Apps Script 網頁應用程式的網址（https://script.google.com/macros/s/…/exec）。空白時只提供複製內容。
-const BUILD='V59',REPORT_URL='';
+const BUILD='V60',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
 let bugLast=0;
 function openBug(){E.bugStatus.textContent='';E.bugSend.disabled=false;openModal(E.bugModal);setTimeout(()=>{try{E.bugMsg.focus();}catch(_){}},60);}
 const bugWhere=()=>S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title;

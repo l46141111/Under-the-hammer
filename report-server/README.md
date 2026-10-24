@@ -16,7 +16,7 @@
    - 執行身分：**我**。
    - 誰可以存取：**所有人**。
    - 按 **部署**，複製「網頁應用程式」的網址（`https://script.google.com/macros/s/…/exec`）。
-6. 把這個網址填進 `index.html` 裡的 `REPORT_URL`。
+6. 把這個網址填進 `index.html` 裡的 `REPORT_URL`（目前使用中的網址已經填好）。
 
 用瀏覽器打開那個網址，看到「Under the Hammer 回報系統正常運作中。」就代表部署成功。
 
