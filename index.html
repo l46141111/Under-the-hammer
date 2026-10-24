@@ -153,9 +153,9 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 .rock .motif{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;pointer-events:none}
 .rock .motif.glint{animation:glint 2.6s steps(1) infinite}
 @keyframes glint{0%,70%{filter:none}72%,80%{filter:brightness(1.6)}82%{filter:none}}
-.rock.lock{filter:brightness(calc(var(--sh,1) * .5)) saturate(.6);cursor:not-allowed}
+.rock.lock{filter:brightness(calc(var(--sh,1) * .84)) saturate(.8);cursor:not-allowed}
 .rock.lock:hover,.rock.lock:active{transform:none}
-.rock.gone{background:var(--void);filter:none;box-shadow:inset 0 5px 10px rgba(0,0,0,.6);cursor:default}
+.rock.gone{filter:brightness(.46) saturate(.8);box-shadow:inset 0 8px 0 rgba(0,0,0,.42),inset 6px 0 0 rgba(0,0,0,.22),inset 0 -3px 0 rgba(255,255,255,.07);cursor:default}
 .rock.shake{animation:shake .18s}
 .ffoot{display:grid;gap:12px;margin-top:12px}
 .ftips{list-style:none;margin:0;padding:0;display:grid;gap:4px}
@@ -1608,7 +1608,7 @@ function renderField(){
     h+=`<div class="lyr"><span>${L.name}</span><small title="需要敲幾下">${'●'.repeat(L.hp)}</small></div>`;
     for(let c=0;c<6;c++){
       const i=r*6+c,cell=oc.cells[i];
-      if(cell.broken){h+=`<button class="rock gone" type="button" data-i="${i}" disabled aria-label="已敲開"></button>`;continue;}
+      if(cell.broken){h+=`<button class="rock gone" type="button" data-i="${i}" disabled aria-label="已敲開" style="--c:${R.color};--p:${texURI(R.pat,R.color)}"></button>`;continue;}
       const hit=cell.max-cell.hp,ink=isDark(R.color)?INK_L:INK_D,lk=!exposed(i);
       const lu=cell.lure||richTop(L),mk=cell.rich&&lu?(SPEC[lu].cat==='化石'?'f':'m'):null,mo=mk?`<i class="motif${mk==='m'?' glint':''}" style="background-image:url(${motifURL(L,R.color,cell.ms,lu)})"></i>`:'';
       h+=`<button class="rock${cell.joint&&!lk?' joint':''}${hit?' hit'+Math.min(hit,2):''}${lk?' lock':''}${mk?' rich':''}${cell.big?' bigc':''}" type="button" data-i="${i}"${lk?' aria-disabled="true"':''} style="--c:${R.color};--p:${texURI(R.pat,R.color)};--sh:${cell.sh}" aria-label="${L.name}${lk?'，還埋在裡面':''}${cell.big?'，露出一大塊骨頭':mk?(mk==='m'?'，有礦物閃光':'，有化石紋路'):''}，還要敲 ${cell.hp} 下${cell.joint?'，有節理':''}">${mo}</button>`;
@@ -3541,7 +3541,7 @@ const copyFail=t=>{try{t.focus();t.select();t.setSelectionRange(0,t.value.length
 
 /* ================= 回報問題 ================= */
 // REPORT_URL：Google Apps Script 網頁應用程式的網址（https://script.google.com/macros/s/…/exec）。空白時只提供複製內容。
-const BUILD='V61',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
+const BUILD='V62',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
 let bugLast=0;
 function openBug(){E.bugStatus.textContent='';E.bugSend.disabled=false;openModal(E.bugModal);setTimeout(()=>{try{E.bugMsg.focus();}catch(_){}},60);}
 const bugWhere=()=>S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title;
