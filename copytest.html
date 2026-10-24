@@ -1,0 +1,14 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>copy test</title></head>
+<body style="font:16px sans-serif;padding:20px">
+<button id="b" style="font-size:20px;padding:10px 20px">測試複製</button>
+<p id="r">還沒按</p>
+<textarea id="out" rows="2" style="width:100%" placeholder="按完之後在這裡 Ctrl+V"></textarea>
+<script>
+async function copyText(text){
+  let how='';
+  try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return 'clipboard API';}}catch(e){how='API 失敗('+e.name+')；';}
+  try{const ta=document.createElement('textarea');ta.value=text;ta.readOnly=false;ta.style.cssText='position:fixed;top:0;left:0;width:2px;height:2px;padding:0;border:0;opacity:0;font-size:16px';document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,text.length);const ok=document.execCommand('copy');ta.remove();if(ok)return how+'execCommand';}catch(e){how+='exec 失敗('+e.name+')';}
+  return how+'都失敗';
+}
+document.getElementById('b').onclick=async()=>{document.getElementById('r').textContent=await copyText('UTH-COPY-TEST-'+Date.now());};
+</script></body></html>
