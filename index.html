@@ -1756,11 +1756,15 @@ function resolveSplit(i){
 function splitShow(i){if(ovBusy)return;const r=resolveSplit(i);if(!r)return;sel=S.grid[i]?i:null;renderGrid();renderInfo();save();playSplit(r);}
 function splitAll(){
   const idx=[];S.grid.forEach((it,i)=>{if(it&&it.t==='rock')idx.push(i);});if(!idx.length)return;
-  let found=0,best=null;
-  idx.forEach(i=>{const el=slotEl(i),r=resolveSplit(i);if(r.hid){found++;floatAt(el,'+'+SPEC[r.hid].name,'bonus');if(!best||r.tier>best.tier)best=r;}else floatAt(el,'只是石頭','miss');});
+  const got=[];
+  idx.forEach(i=>{const el=slotEl(i),r=resolveSplit(i);if(r.hid){got.push(r);floatAt(el,'+'+SPEC[r.hid].name,'bonus');}else floatAt(el,'只是石頭','miss');});
   sel=null;renderGrid();renderInfo();save();
-  toast(`剖開 ${idx.length} 塊，${found?`找到 <b>${found}</b> 件標本`:'什麼都沒有'}`);
-  if(best&&best.tier>=3)playSplit(best);else if(found)sfx.find();else sfx.brk();
+  if(!got.length){toast(`剖開 ${idx.length} 塊，什麼都沒有`);sfx.brk();return;}
+  if(ovBusy){toast(`剖開 ${idx.length} 塊，找到 <b>${got.length}</b> 件標本`);sfx.find();return;}
+  const best=got.reduce((a,b)=>b.tier>a.tier?b:a),cnt={};
+  got.forEach(r=>{if(r===best)return;const n=SPEC[r.hid].name;cnt[n]=(cnt[n]||0)+1;});
+  best.batch={n:idx.length,others:Object.entries(cnt).map(([n,c])=>c>1?`${n}\u00a0×${c}`:n)};
+  playSplit(best);
 }
 function startJob(i,kind){
   const it=S.grid[i];if(!it||it.t!=='spec'||it.st!=='raw')return;const d=SPEC[it.id];let cost=0,dur=0;
@@ -2057,6 +2061,7 @@ async function playSplit(r){
     await tween(540,t=>{A.sprite.y=(GROUND-24)+(8-(GROUND-24))*t;},easeBack);
     A.sprite.settled=true;
   } else {dust(48,GROUND-2,16);sfx.thud();E.ovBig.textContent='';E.ovMsg.textContent='只是石頭。';}
+  if(r.batch)E.ovMsg.textContent+=`這次一共剖開 ${r.batch.n} 塊${r.batch.others.length?`，另外還找到${r.batch.others.join('、')}`:''}。`;
   await ovWait(300);
   ovBusy=false;ovFast=false;E.ovSkip.hidden=true;
   const left=S.grid.filter(it=>it&&it.t==='rock').length;
@@ -3541,7 +3546,7 @@ const copyFail=t=>{try{t.focus();t.select();t.setSelectionRange(0,t.value.length
 
 /* ================= 回報問題 ================= */
 // REPORT_URL：Google Apps Script 網頁應用程式的網址（https://script.google.com/macros/s/…/exec）。空白時只提供複製內容。
-const BUILD='V62',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
+const BUILD='V63',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
 let bugLast=0;
 function openBug(){E.bugStatus.textContent='';E.bugSend.disabled=false;openModal(E.bugModal);setTimeout(()=>{try{E.bugMsg.focus();}catch(_){}},60);}
 const bugWhere=()=>S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title;
