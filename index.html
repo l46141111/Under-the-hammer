@@ -501,6 +501,10 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 .ovbig.t0{color:#8E9590}.ovbig.t1{color:#CFD8DC}.ovbig.t2{color:#5BE08F}.ovbig.t3{color:#FF6A5A;text-shadow:0 0 14px rgba(255,74,61,.7)}
 .ovmsg{font-family:var(--f-display);font-size:18px;min-height:2.6em;max-width:30ch;line-height:1.45}
 .ovacts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:38px}
+.ovbatch{width:min(100%,30ch);padding-top:10px;border-top:1px dashed rgba(242,241,236,.25);display:flex;flex-direction:column;align-items:center;gap:8px}
+.ovbatch .obh{font-size:12px;color:#B8BCB6}
+.ovbatch ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.ovbatch li{font-size:14px;line-height:1.4;padding:3px 8px;border:1px solid rgba(242,241,236,.3);white-space:nowrap}
 .ovacts .btn{background:#262B2E;color:#F2F1EC;border-color:#4A5256}
 .ovacts .btn.primary{background:#E2AA4C;border-color:#E2AA4C;color:#1A1408;font-weight:700}
 .ovskip{font-size:12px;color:#8E9590}
@@ -523,8 +527,8 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 .ofwrap.rain::after{background:var(--rainImg) 0 0/32px 32px,rgba(20,34,52,.35);animation:rainfall .45s linear infinite}
 .ofwrap.dust::after{background:var(--dustImg) 0 0/48px 48px,rgba(140,100,50,.35);animation:dustblow 1.2s linear infinite}
 @keyframes rainfall{to{background-position:-16px 32px,0 0}}
-.ofwrap.rain.drizzle::after{background:var(--drizImg) 0 0/32px 32px,rgba(40,56,72,.22);animation:drizzle .55s linear infinite}
-@keyframes drizzle{to{background-position:0 32px,0 0}}
+.ofwrap.rain.drizzle::after{background:var(--drizImg) 0 0/32px 64px,var(--drizFarImg) 9px 5px/32px 32px,rgba(40,56,72,.05);opacity:.75;animation:drizzle .24s linear infinite}
+@keyframes drizzle{to{background-position:0 64px,9px 37px,0 0}}
 @keyframes dustblow{to{background-position:48px 6px,0 0}}
 .wxclosed{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;width:min(90%,340px);padding:12px 14px;border:2px solid var(--ink);background:var(--sheet);box-shadow:4px 4px 0 var(--shadow);text-align:center;font-size:16px;display:flex;flex-direction:column;gap:8px;align-items:center}
 .app.quaking{animation:quake .12s linear 10}
@@ -838,6 +842,7 @@ h1{font-size:24px;letter-spacing:.08em}
     <div class="ovart" id="ovArt"></div>
     <div class="ovbig" id="ovBig"></div>
     <div class="ovmsg" id="ovMsg" aria-live="polite"></div>
+    <div class="ovbatch" id="ovBatch" hidden></div>
     <div class="ovacts" id="ovActs"></div>
     <div class="ovskip" id="ovSkip">點一下畫面可以快轉</div>
   </div>
@@ -1363,8 +1368,9 @@ function pixOverlays(){
   const H1=PX(16,14);let x=8;for(let y=0;y<14;y++){H1.set(x,y,K);if(y%3===2)x+=(y%6===2?1:-1);}
   const H2=PX(16,14);H1.g.forEach((r,y)=>r.forEach((v,i)=>{if(v)H2.set(i,y,v);}));for(let i=0;i<8;i++)H2.set(i,7+(i%3===0?0:1),K);for(let i=11;i<16;i++)H2.set(i,4+(i%2),K);
   const G=PX(8,4);[[0,3],[1,2],[1,3],[3,3],[4,1],[4,2],[4,3],[6,2],[6,3],[7,3]].forEach(([a,b])=>G.set(a,b,'#5E8A3A'));G.set(4,0,'#8DC05A');
-  const DZ=PX(16,16);[[2,1],[10,5],[6,10],[13,12],[1,13]].forEach(([a,b])=>{DZ.set(a,b,'#B8D4FF');DZ.set(a,b+1,'#93B7E8');});
-  st.setProperty('--drizImg',`url(${gridURL(DZ.g)})`);
+  const DZ=PX(16,32);[[2,2],[11,8],[6,15],[14,21],[3,25],[9,29]].forEach(([a,b])=>{DZ.set(a,b,'#E2EDFB');DZ.set(a,b+1,'#B8D4FF');DZ.set(a,b+2,'#93B7E8');});
+  const DF=PX(16,16);[[5,3],[13,10],[1,12]].forEach(([a,b])=>{DF.set(a,b,'#A9C3E6');DF.set(a,b+1,'#86A4CF');});
+  st.setProperty('--drizImg',`url(${gridURL(DZ.g)})`);st.setProperty('--drizFarImg',`url(${gridURL(DF.g)})`);
   const RN=PX(16,16);[[2,0],[10,4],[6,9],[13,11],[1,12]].forEach(([a,b])=>{RN.set(a,b,'#A9CBFF');RN.set(a-1,b+1,'#A9CBFF');RN.set(a-2,b+2,'#7FA8E0');});
   const DS=PX(24,24);for(let k=0;k<14;k++)DS.set((k*7)%24,(k*11)%24,k%3?'#D9B47A':'#A8804E');
   const SN=PX(20,20);[[3,2],[13,6],[7,11],[16,15],[2,17]].forEach(([a,b])=>{SN.set(a,b,'#FFFFFF');SN.set(a-1,b,'#E6EEF5');SN.set(a+1,b,'#E6EEF5');SN.set(a,b-1,'#E6EEF5');SN.set(a,b+1,'#E6EEF5');});
@@ -1377,7 +1383,7 @@ function pixOverlays(){
 let S=null, sel=null, selCase=null, casePop=null, lastT=0, lastSave=0, drag=null, inTick=false, overEl=null, resetArm=0, booted=false;
 const popSet=new Set();
 const E={};
-['app','column','fx','ghost','toasts','money','dayK','todayV','dayBar','dayWx','dayClock','dayTime','rep','repBar','stam','stamBar','stamNext','stamStat','badge','mkDot','calBtn','log','logText','logMore','logSr','where','questText','questReward','siteName','siteMeta','travelBtn','fieldBody','mmNote','mmNoteText','goMarket','bugModal','bugBtn','pauseBug','bugMsg','bugContact','bugHp','bugSave','bugSend','bugStatus','outcrop','boxCountF','newOc','boxCount','takeAll','splitAll','tray','info','mkName','mkMeta','mkBody','boxList','benchCount','staff','wxBar','wxClosed','bulkBtn','staffWage','dayLen','dayLenTxt','eshopPick','eshopLog','shopDot','sortBar','eshop','eshopMeta','offer','musDot','dayov','dayDate','dayH','wxIcon','wxName','wxDesc','dayList','dayEv','dayGo','ops','cases','cinfo','ov','ovTitle','ovCues','ovArt','ovBig','ovMsg','ovActs','ovSkip','feverTag','ofwrap','visitor','yday','shop','dexBtn','dexCount','setBtn','dexModal','dexBody','jnoteModal','jnoteBody','dayRem','digPanel','bigBox','plats','starCard','exCard','calModal','calBody','calDot','calStat','starK','pauseBtn','pauseov','pauseInfo','pauseGo','pauseSave','lockov','lockTake','slots','autoSaveTxt','expBtn','impBtn','xpanel','dexTitleCount','travelModal','travelBody','setModal','soundBtn','resetBtn'].forEach(id=>E[id]=document.getElementById(id));
+['app','column','fx','ghost','toasts','money','dayK','todayV','dayBar','dayWx','dayClock','dayTime','rep','repBar','stam','stamBar','stamNext','stamStat','badge','mkDot','calBtn','log','logText','logMore','logSr','where','questText','questReward','siteName','siteMeta','travelBtn','fieldBody','mmNote','mmNoteText','goMarket','bugModal','bugBtn','pauseBug','bugMsg','bugContact','bugHp','bugSave','bugSend','bugStatus','outcrop','boxCountF','newOc','boxCount','takeAll','splitAll','tray','info','mkName','mkMeta','mkBody','boxList','benchCount','staff','wxBar','wxClosed','bulkBtn','staffWage','dayLen','dayLenTxt','eshopPick','eshopLog','shopDot','sortBar','eshop','eshopMeta','offer','musDot','dayov','dayDate','dayH','wxIcon','wxName','wxDesc','dayList','dayEv','dayGo','ops','cases','cinfo','ov','ovTitle','ovCues','ovArt','ovBig','ovMsg','ovBatch','ovActs','ovSkip','feverTag','ofwrap','visitor','yday','shop','dexBtn','dexCount','setBtn','dexModal','dexBody','jnoteModal','jnoteBody','dayRem','digPanel','bigBox','plats','starCard','exCard','calModal','calBody','calDot','calStat','starK','pauseBtn','pauseov','pauseInfo','pauseGo','pauseSave','lockov','lockTake','slots','autoSaveTxt','expBtn','impBtn','xpanel','dexTitleCount','travelModal','travelBody','setModal','soundBtn','resetBtn'].forEach(id=>E[id]=document.getElementById(id));
 
 function fresh(){const t=Date.now();return{v:2,money:5000,stam:20,ocLeft:OC_BASE,box:[],grid:Array(25).fill(null),cases:[null,null,null],
   upg:{hammer:0,case:0,box:0,map:0,kit:0,uv:0,torch:0,plat:0,quake:0,bench:0,slots:0,photo:0,seller:0},jnote:[],dex:{},seen:{},quest:0,region:'tw',site:'dahan',outcrop:null,ocNo:0,
@@ -1763,7 +1769,7 @@ function splitAll(){
   if(ovBusy){toast(`剖開 ${idx.length} 塊，找到 <b>${got.length}</b> 件標本`);sfx.find();return;}
   const best=got.reduce((a,b)=>b.tier>a.tier?b:a),cnt={};
   got.forEach(r=>{if(r===best)return;const n=SPEC[r.hid].name;cnt[n]=(cnt[n]||0)+1;});
-  best.batch={n:idx.length,others:Object.entries(cnt).map(([n,c])=>c>1?`${n}\u00a0×${c}`:n)};
+  best.batch={n:idx.length,others:Object.entries(cnt).map(([n,c])=>c>1?`${n} ×${c}`:n)};
   playSplit(best);
 }
 function startJob(i,kind){
@@ -1929,7 +1935,7 @@ function pixJade(it,fin){
 let ovBusy=false,ovFast=false,ovTimers=[],heartT=null,jadeI=null;
 function ovWait(ms){return new Promise(r=>{if(ovFast||RM){r();return;}const id=setTimeout(()=>{ovTimers=ovTimers.filter(x=>x.id!==id);r();},ms);ovTimers.push({id,r});});}
 function ovSkipAll(){ovFast=true;stopHeart();ovTimers.forEach(x=>{clearTimeout(x.id);x.r();});ovTimers=[];}
-function ovOpen(title){if(A)A.alive=false;E.ovArt.style.removeProperty('--cg');E.ov.hidden=false;E.ov.className='ov';ovFast=false;E.ovTitle.textContent=title;E.ovBig.textContent='';E.ovBig.className='ovbig';E.ovMsg.textContent='';E.ovActs.innerHTML='';E.ovCues.innerHTML='';E.ovSkip.hidden=false;E.ovArt.className='ovart';}
+function ovOpen(title){if(A)A.alive=false;E.ovArt.style.removeProperty('--cg');E.ov.hidden=false;E.ov.className='ov';ovFast=false;E.ovTitle.textContent=title;E.ovBig.textContent='';E.ovBig.className='ovbig';E.ovMsg.textContent='';E.ovBatch.hidden=true;E.ovBatch.innerHTML='';E.ovActs.innerHTML='';E.ovCues.innerHTML='';E.ovSkip.hidden=false;E.ovArt.className='ovart';}
 function ovClose(){if(ovBusy)return;if(A)A.alive=false;E.ov.hidden=true;stopHeart();E.ov.className='ov';jadeI=null;renderGrid();renderInfo();}
 function startHeart(fast){stopHeart();let iv=fast?560:720;const beat=()=>{tone(62,.13,'sine',.45);tone(52,.17,'sine',.35,.15);iv=Math.max(300,iv-45);heartT=setTimeout(beat,iv);};beat();}
 function stopHeart(){clearTimeout(heartT);heartT=null;}
@@ -2061,7 +2067,7 @@ async function playSplit(r){
     await tween(540,t=>{A.sprite.y=(GROUND-24)+(8-(GROUND-24))*t;},easeBack);
     A.sprite.settled=true;
   } else {dust(48,GROUND-2,16);sfx.thud();E.ovBig.textContent='';E.ovMsg.textContent='只是石頭。';}
-  if(r.batch)E.ovMsg.textContent+=`這次一共剖開 ${r.batch.n} 塊${r.batch.others.length?`，另外還找到${r.batch.others.join('、')}`:''}。`;
+  if(r.batch&&r.batch.others.length){E.ovBatch.innerHTML=`<div class="obh">這次剖開 ${r.batch.n} 塊，其他收穫</div><ul>${r.batch.others.map(n=>`<li>${n}</li>`).join('')}</ul>`;E.ovBatch.hidden=false;}
   await ovWait(300);
   ovBusy=false;ovFast=false;E.ovSkip.hidden=true;
   const left=S.grid.filter(it=>it&&it.t==='rock').length;
@@ -3546,7 +3552,7 @@ const copyFail=t=>{try{t.focus();t.select();t.setSelectionRange(0,t.value.length
 
 /* ================= 回報問題 ================= */
 // REPORT_URL：Google Apps Script 網頁應用程式的網址（https://script.google.com/macros/s/…/exec）。空白時只提供複製內容。
-const BUILD='V63',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
+const BUILD='V64',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
 let bugLast=0;
 function openBug(){E.bugStatus.textContent='';E.bugSend.disabled=false;openModal(E.bugModal);setTimeout(()=>{try{E.bugMsg.focus();}catch(_){}},60);}
 const bugWhere=()=>S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title;
