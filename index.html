@@ -427,6 +427,7 @@ h1{font-family:var(--f-display);font-size:clamp(22px,4.6vw,30px);line-height:1.1
 #bugStatus .xbtns{justify-content:flex-start;margin-top:6px}
 .hallw{display:flex;justify-content:center;background:#17110D;border:2px solid var(--ink);line-height:0;overflow:hidden;margin:0 0 6px}
 .hallw canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:manipulation}
+.sccap{margin:0 0 12px;padding-left:10px;border-left:3px solid var(--rule);font-size:13.5px;line-height:1.6;color:var(--ink-soft);min-height:1.6em}
 .hallcap{display:flex;justify-content:space-between;align-items:flex-start;gap:4px 12px;margin:0 0 12px;min-height:3em}
 .hallcap .visitor{margin:0;flex:1;min-width:0}
 .hallcap .visitor b{color:var(--gold)}
@@ -751,6 +752,8 @@ h1{font-size:24px;letter-spacing:.08em}
       <div class="phead">
         <div><h2 id="mkName"></h2><p class="meta" id="mkMeta"></p></div>
       </div>
+      <div class="hallw scw" id="marketW"><canvas id="marketCv" role="img" aria-label="市集的樣子：攤商顧攤、客人在攤位間挑貨殺價"></canvas></div>
+      <p class="sccap" id="marketCap"></p>
       <div id="mkBody"></div>
       <p class="mfoot">市集上的東西可能是假貨，便宜得不合理的更要小心。買回來的標本可以在標本工坊送鑑定。</p>
       <h3 class="sh">鑑別工具</h3>
@@ -762,6 +765,8 @@ h1{font-size:24px;letter-spacing:.08em}
       <div class="phead">
         <div><h2 id="shopH">網路商店</h2><p class="meta" id="eshopMeta"></p></div>
       </div>
+      <div class="hallw scw" id="shopW"><canvas id="shopCv" role="img" aria-label="館長的工作室：有人下單就從架上拿貨、打包，宅配來收件"></canvas></div>
+      <p class="sccap" id="shopCap"></p>
       <h3 class="sh top">已上架</h3>
       <div id="eshop"></div>
       <h3 class="sh">工作台上可以上架的標本</h3>
@@ -1105,8 +1110,8 @@ const SPEC={
   turtle:{name:'鱉類龜殼碎片',sn:'龜殼',sci:'Trionychidae indet.',sciUp:true,tax:'脊索動物門 · 爬行綱 · 龜鱉目 Testudines · 鱉科 Trionychidae（未定種）',cat:'化石',proc:'prep',size:'s',ap:1,val:400,g:'trionyx',bg:'#A68C64',fg:'#6A5844',hi:'#9C8A70',mp:'mud',from:'蒙大拿州 Hell Creek 層',age:'白堊紀最末期，約 6800 萬–6600 萬年前',desc:'Hell Creek 最常見的龜是鱉類（軟殼的龜）。牠們的龜殼表面有一個個圓形的小凹坑，常常連成長長的溝。',find:'蒙大拿州 Hell Creek。'},
   hadro:{name:'鴨嘴龍牙齒',sn:'鴨嘴龍牙',sci:'Hadrosauridae indet.',sciUp:true,tax:'脊索動物門 · 鳥臀目 Ornithischia · 鴨嘴龍科 Hadrosauridae（未定種）',cat:'化石',proc:'prep',size:'s',ap:2.6,val:1500,g:'hadrot',bg:'#A68C64',fg:'#4A3A2C',hi:'#8A7058',vk:'dino',mp:'sandstone',from:'蒙大拿州 Hell Creek 層',age:'白堊紀最末期，約 6800 萬–6600 萬年前',desc:'鴨嘴龍的牙齒側面看是菱形，中間有一條稜脊，內側沒有琺瑯質。牠們嘴裡有一排排會不斷替換的牙齒，所以掉下來的牙齒不少。',find:'蒙大拿州 Hell Creek 的含骨砂岩。'},
   cera:{name:'角龍牙齒',sn:'角龍牙',sci:'Ceratopsidae indet.',sciUp:true,tax:'脊索動物門 · 鳥臀目 Ornithischia · 角龍科 Ceratopsidae（未定種）',cat:'化石',proc:'prep',size:'s',ap:2.8,val:2000,g:'ceratot',bg:'#A68C64',fg:'#3E3228',hi:'#7A5C40',vk:'dino',mp:'sandstone',from:'蒙大拿州 Hell Creek 層',age:'白堊紀最末期，約 6800 萬–6600 萬年前',desc:'沒磨損的角龍牙齒，牙冠像一片葉子，外側有好幾條稜脊；磨過的牙齒頂端是平的。Hell Creek 層的角龍有三角龍。',find:'蒙大拿州 Hell Creek 的含骨砂岩。'},
-  big_trike:{name:'三角龍骨架',sn:'三角龍骨架',sci:'Triceratops horridus',auth:'(Marsh, 1889)',tax:'脊索動物門 · 鳥臀目 Ornithischia · 角龍科 Ceratopsidae',cat:'化石',proc:'big',size:'xl',ap:52,val:540000,g:'trikeskull',bg:'#A68C64',fg:'#6E5844',hi:'#C9A97E',vk:'dino',mp:'sandstone',from:'蒙大拿州 Hell Creek 層',age:'白堊紀最末期，約 6800 萬–6600 萬年前',desc:'三角龍是白堊紀最末期的大型角龍，成年的頭骨約兩公尺長，有兩根長長的眉角、一根鼻角，後面是寬大的頸盾。Hell Creek 層挖到的三角龍骨架很少是完整的：2014 年在南達科他州找到、目前已知最大的三角龍骨架「Big John」，真骨頭也只有六成多，2021 年在巴黎拍賣。這副骨架缺的部分用樹脂翻模補齊，再架上鋼架站起來。在美國，私人土地上挖到的化石屬於地主；這副是跟牧場主人談好條件後合法挖出來的。',find:'蒙大拿州 Hell Creek，要好幾天才挖得完。',big:true},
-  big_whale:{name:'抹香鯨類骨架',sn:'鯨骨架',sci:'Aulophyseter morricei',auth:'Kellogg, 1927',tax:'脊索動物門 · 哺乳綱 · 鯨類 Cetacea · 抹香鯨科 Physeteridae',cat:'化石',proc:'big',size:'xl',ap:42,val:320000,g:'auloskull',bg:'#B8A88A',fg:'#7A6A58',hi:'#C9B79A',vk:'whale',mp:'mud',from:'加州 Sharktooth Hill',age:'Round Mountain 粉砂岩 · 中新世中期，約 1590 萬–1520 萬年前',desc:'Aulophyseter 是中新世的小型抹香鯨，估計體長約 6.4 公尺。1927 年，Kellogg 研究了一副從加州 Temblor 層出土的頭骨，為牠命名。抹香鯨類的頭骨前面是長長的吻部，後面是一個大凹盆。Sharktooth Hill 骨層裡的骨頭大多散落各處，不過骨層頂部偶爾有關節還連在一起的鯨魚骨架。遊戲裡這副連著脊椎、肋骨和鰭肢的 Aulophyseter 骨架是虛構的發現，缺的部分用翻模補齊。',find:'加州 Sharktooth Hill，要好幾天才挖得完。',big:true},
+  big_trike:{name:'三角龍骨架',sn:'三角龍骨架',sci:'Triceratops horridus',auth:'(Marsh, 1889)',tax:'脊索動物門 · 鳥臀目 Ornithischia · 角龍科 Ceratopsidae',cat:'化石',proc:'big',size:'xl',ap:52,val:540000,g:'trikeskull',bg:'#A68C64',fg:'#8E7458',hi:'#C9A97E',vk:'dino',mp:'sandstone',from:'蒙大拿州 Hell Creek 層',age:'白堊紀最末期，約 6800 萬–6600 萬年前',desc:'三角龍是白堊紀最末期的大型角龍，成年的頭骨約兩公尺長，有兩根長長的眉角、一根鼻角，後面是寬大的頸盾。Hell Creek 層挖到的三角龍骨架很少是完整的：2014 年在南達科他州找到、目前已知最大的三角龍骨架「Big John」，真骨頭也只有六成多，2021 年在巴黎拍賣。這副骨架缺的部分用樹脂翻模補齊，再架上鋼架站起來。在美國，私人土地上挖到的化石屬於地主；這副是跟牧場主人談好條件後合法挖出來的。',find:'蒙大拿州 Hell Creek，要好幾天才挖得完。',big:true},
+  big_whale:{name:'抹香鯨類骨架',sn:'鯨骨架',sci:'Aulophyseter morricei',auth:'Kellogg, 1927',tax:'脊索動物門 · 哺乳綱 · 鯨類 Cetacea · 抹香鯨科 Physeteridae',cat:'化石',proc:'big',size:'xl',ap:42,val:320000,g:'auloskull',bg:'#B8A88A',fg:'#A08E76',hi:'#C9B79A',vk:'whale',mp:'mud',from:'加州 Sharktooth Hill',age:'Round Mountain 粉砂岩 · 中新世中期，約 1590 萬–1520 萬年前',desc:'Aulophyseter 是中新世的小型抹香鯨，估計體長約 6.4 公尺。1927 年，Kellogg 研究了一副從加州 Temblor 層出土的頭骨，為牠命名。抹香鯨類的頭骨前面是長長的吻部，後面是一個大凹盆。Sharktooth Hill 骨層裡的骨頭大多散落各處，不過骨層頂部偶爾有關節還連在一起的鯨魚骨架。遊戲裡這副連著脊椎、肋骨和鰭肢的 Aulophyseter 骨架是虛構的發現，缺的部分用翻模補齊。',find:'加州 Sharktooth Hill，要好幾天才挖得完。',big:true},
   promicro:{name:'小菊石 Promicroceras',sn:'小菊石',sci:'Promicroceras sp.',tax:'軟體動物門 · 頭足綱 · 菊石亞綱 · 菊石目 Ammonitida · Eoderoceratidae',cat:'化石',proc:'prep',size:'s',ap:1.4,val:900,g:'promicro',bg:'#5A5650',fg:'#A88A48',hi:'#D9C27A',vk:'ammo',mp:'shale',from:'英國 Charmouth',age:'侏羅紀早期辛涅繆爾期晚期，約 1.9 億年前',desc:'Spath 在 1925 年命名了這個屬。在 Lyme Regis 和 Charmouth 一帶的海岸，常撿到被黃鐵礦取代的 Promicroceras，帶著金屬光澤，保存得很好。黃鐵礦化的菊石放久了容易變質，清理前要先評估，不要直接泡水。',find:'英國 Charmouth 的海灘。'},
   asteroc:{name:'菊石 Asteroceras',sn:'菊石',sci:'Asteroceras obtusum',auth:'(Sowerby, 1817)',tax:'軟體動物門 · 頭足綱 · 菊石亞綱 · 菊石目 Ammonitida · Arietitidae',cat:'化石',proc:'prep',size:'s',ap:2.4,val:3500,g:'asteroc',bg:'#5A5650',fg:'#7E776C',hi:'#B5AC9C',vk:'ammo',mp:'shale',from:'英國 Charmouth',age:'侏羅紀早期辛涅繆爾期晚期，約 1.9 億年前',desc:'辛涅繆爾期晚期有一段地層就以牠命名，叫 obtusum 菊石帶。在 Charmouth 的西海灘，牠常從結核裡風化出來，不過比起往東一點的 Stonebarrow，這裡撿到的多半磨損得比較厲害。',find:'英國 Charmouth 的海灘。'},
   belem:{name:'箭石',sci:'Belemnitida indet.',sciUp:true,tax:'軟體動物門 · 頭足綱 · 箭石目 Belemnitida（未定種）',cat:'化石',proc:'clean',size:'s',ap:.6,val:400,g:'belem',bg:'#8A847A',fg:'#A8703A',hi:'#E2B57A',vk:'ammo',mp:'mud',from:'英國 Charmouth',age:'侏羅紀早期，約 1.9 億年前',desc:'箭石是已經滅絕的頭足類，和烏賊是遠親。最常變成化石的，是牠身體後端那根子彈形的鞘。箭石鞘是 Charmouth 海灘上最常見的化石之一；因為好幾層地層都有，撿到的那一根通常認不出是哪一屬。',find:'英國 Charmouth 的海灘，很常見。'},
@@ -2954,7 +2959,7 @@ function sellListing(l,quiet){
   if((l.it.fake||l.it.comp)&&l.it.cert!=='fake')S.claims.push({it:l.it,price:l.price,name:d.name});
   else if(l.it.cert==='real'&&rnd()<.3){S.rep=clamp(S.rep+1,0,100);S.cardNotes.push({t:`買走「${d.name}」的人留了好評，口碑 +1。`,c:'good'});}
   if(quiet)S.cardNotes.push({t:`網路商店賣出了「${d.name}」，入帳 ${nt(net)}（已扣手續費）。`,c:'good'});
-  else{sfx.coin();toast(`叮！網路商店賣出了「${d.name}」，入帳 <span class="g">${nt(net)}</span>（已扣 ${feeTxt()} 手續費）`);}
+  else{sfx.coin();toast(`叮！網路商店賣出了「${d.name}」，入帳 <span class="g">${nt(net)}</span>（已扣 ${feeTxt()} 手續費）`);shopOrder(d.name);}
   renderShopAll();
 }
 function shopTick(t){const el=t-S.dayStart;S.shop.slice().forEach(l=>{if(l.at!=null&&el>=l.at)sellListing(l,false);});}
@@ -3258,6 +3263,7 @@ function setView(v){
   if(v==='lab'&&S.sortMode){renderGrid();renderInfo();}
   if(v==='market'){renderMarket();if(mkOpen())narrateOnce('firstMarket',LINES.firstMarket);}
   hallShow(v==='museum');if(v==='museum')setTimeout(hallCollector,600);
+  scShow('market',v==='market');scShow('shop',v==='shop');
   ambUpdate();
 }
 function renderAll(){
@@ -3411,7 +3417,7 @@ function decorate(){
 }
 
 /* ================= 大型化石：多日發掘、石膏包、修復、大型展台 ================= */
-const BIGART={"big_trike":["................................................................................................","..............................h.................................................................","..............................m.................................................................","..........................h.hllh.h..............................................................","..m......................hllllmlld..............................................................","...m..m.................hllmmmmmllh.............................................................","....m..mm..............hlmmmmmmmmmlh............................................................",".....ml..m.............llmmmmmmmmmld............................................................","......dlh.m...........llmmmmmmmmmmld............................................................",".......dmhlm.........hlmmmmmmmmmmmmlh...........................................................","........dmmlm........lmmmmmmmmmmmmmld...........................................................",".........dmmlmm......lmmmmmmmmmmmmmld...........................................................","..........dmmllm.....lmmmmmmmmmmmmmld...........................................................","...........dmmllm...hmmmmmmmmmmmmmmldm.......................m.m.m..............................","............ddmllm..lmmmmmmmmmmmmmll.................h.hhhhhh.h.h.hh.h..........................","..............dmllm.lmmmmmmmmmmmmmld............hmhmhmhmmmmmmhmhmhmmhmhhh.......................","...............dmmlmlmmmdmmmmmmmmmld........hmhmd.m.lmmmmmmmmmmmmmmmmmmmml......................","................dmmlmmmmdmmmmmmmmmldm.......m.m.m.lhmmmmmmmmmmmmmmmmmmmmmdm.....................","..........h......dmmlmmmdmmmmmmmmll.....hmhhd.lhmhmmmmmmmmmmmmmmmmmmmmmmd..m....................","..........m.......lmmmmdmmmmmmmmmld...hhd.lmmhmmmmmmmmdmmmmmmmmmmmmmmmmmd.h..m..................","..........m....hhhmmmmmdmmmmmmmmll..hhmmmhmmmmmmdmdmdd.lmmddddmmmmmmddddd.m.h...................","..........dh.hhmmmmmmmmdmmmmmmmmlmhhmmmmmmmmdmdd.m.m.m.lmd....lmmmmdmm...md.m.lm................","...........lhmmmmoommmmdmmmmmmmllmmmmmmmdmddtmtmtmtm.lhdd.h...lmmmdmmlm....md.d.lm..............","..........hmmmmmmommmmmdmmmmmmmlmmmmmmmd.m.m.m.m.m.d.ld.m.m...lmmmddmdm...l..m..d...............","........hhmmmmmmmmmmmmmddmmmmmlmmmmmmmdd.m.m.m.m.d..hdd.m.d...lmmmd.dmmm..dll.hm..mm............",".......hmmmmmmmmmmmmmmmmdmmmmlmmmmmmmd.m.m.m.d.dh.hmd.m.m..l..lmmmd.ddd.ml.ddtmthmt.hm..........",".....hhmmmmmmmmmmmmmmmmmdmmmlmmmmmmmmd.dhdhdh.htm.m.m.m.dh.dl.dmmmmhddd..dm..mdtm.hmd..m........","....hmmmoommmmmmmmmmmmmmdmmlmmddmmmmmmh.m.m.m.mtm.m.m.m..m..d..lmmmddddm...m...ld.m.m.h.........","....lmmmmmmmmmmmmmmmmmmdddmmdd..lmmmmmd.m.m.m.mtm.m.m.dh.m.....lmmmddddd....m..d.ld.lmd.........","...hmmmmmmmmmmmmmmmmmmd...dd....lmmmmmd.m.m.m.mtm.m.dh.m.dh....lmmmd.ddd.......t.ddld.lmh.......","..mmmmmmmmmmmddddddddmd........hmmmmmmd.m.m.m.mtm.d..m.m..m....lmmmd.ddd.......t...d.md.lm......","...dmmmmmmmmd........m.........lmmmmddmhdhd.m.mtd..h.m.dh.d....dmmmd.ddd.......t......dmd.h.....","....ddmmmmmmmhhhhhhohmh........ddmmd..ldmm.hdhdh.h.m.m..m.......lmmmhdddm......t........dlmmm...","......lmmmmmmmmmmmoommmlm........dmmh.ddhd.m.m.m.m.m.dh.d.......lmmmddddd......t.........dd..mm.","......ddddddmmmmmmommmmd..........dmd..mldhd.m.m.m.dh.m.........lmmmd.ddd......t...........mm..m","............ddddddddddd............lmh..dmldhdhd.dh.m.d.........lmmdd.ddd......t.............m..","...................tssssss.........dmmh.mddmm.mth.m.d...........lmd.d.ddd......t................","......................t.............dmd..dmdd.dtm.m.............lmmh.mddd......t................","......................t..............lmhm.ddm..td.d............hmmdd.ddd.......t................","......................t..............ldd...d...t...............lmd.m.ddd.......t................","......................t..............m.m..m....t...............lmd.d.ddd.......t................","......................t..............d.d..d....t...............lmmh..ddd.......t................","......................t.............h.h...d....t..............hmmdd.mddd.......t................","......................t.............m.m...d....t..............lmd.m.ddd........t................","......................t............hd.m..m.....t..............dmd.d.ddd........t................","......................t............ld.d..d.....t...............ld...dd.........t................","......................t............ld...md.....t..............hmmm.mddm........t................","......................t...........hmmm.mddm....t............lmmddmmddd.........t................","..............t.......t..........mmdd.mddd.....t...........md.d.dddd.d.........t.......t........","..............ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss........"],"big_whale":["............................................................................................","............................................................................................","............................................................................................","............................................................................................","............................................................................................","...............................h............................................................","..............................hmhhhh...............h.h.h.h.h................................",".............................hmmmdmd.........h.h.l.m.m.m.m.m.l.h.h..........................","............................hmdddddmh....l.l.m.m.d.dhdhdhd.d.d.m.m.l.h......................","...........................hmmddddddd..l.dhdhdhdh.h.m.m.m.h.h.hdhd.d.m......................",".........................hhmmmmdddddmhhdh.m.m.m.lhmhmhmhmhmhd.m.m.m.ld.m.l..................","......................hhhmmmmmmddddmmmd.lhmhmhmhmmmmmmmmmmmmmhmhd...d.h.ld.l................","....................hhmmmmmmmmmmmmdmmmmhmmmmmmmmmmmdmdmdmdmmmmmmmmh...m.d.ld.l..............",".................hhhmmmmmmmmmmmmmommmmmmmmmmmmmdmdd.m.m.m.lmmmddd.lmmmd...d.ld.m............",".............hhhhmmmmmmmmmmmmmmmmmmmmmddmmmmmdd.m.m.m.dtdhdmdd....m...dmml..d.h.............","..........hhhmmmmmmmmmmmmmmmmmmmmmmddd..lmmmd.d.dhdhdh.h.mtm.dl...m.h....dmm..m.............","......hhhhmmmmmmmmmmmmmmmmmmmmmmmdd.....dmmmmh.h.m.m.m.m.mtdl.dl..m.m.h.h...mmd.............",".mmmmhmmmmmmmmmmmmmmmddmddmdddddd........lmmmd.m.m.m.m.m.dh.d..dm.m.m.m.m.h...dm............",".....hmmhmmhmmhmmhmmh..h..h..............dmmmd.m.m.m.m.dh.m..l....d.d.m.m.m.h...ml..........","...mlmmmmmmmmmmmmmmmmhhmhhmhh.............dmmdmm.m.d.dh.m.dh.d........d.d.m.m.h..dml........","....dmmmmmmmmmmmmmmmmmmmmmmmml.............lmmhdhdh.h.m.d.tm...........m..d.mtmthtsdm.......",".....dddddddddddddddddmdddddddmm...........ddmdmm.m.m.dh.ltd............m...d.d.m.h..m......","......................d.....t................lmhd.dhdh.m.dm.....................d.m.h.ml....","............................t................ddd.h.m.m.d..t.....................t.d.m..dm...","............................t..................d.mmm.m....t.....................t...d.h..m..","............................t.................m.ld.d.d....t.....................t.....m...m.","............................t..................md.m.m.....t.....................t.....d....m","............................t....................m...m....t.....................t...........","............................t.............................t.....................t...........","............................t.............................t.....................t...........","............................t.............................t.....................t...........","............................t.............................t.....................t...........","....................t.......t.............................t.....................t.......t...","....................sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss..."]};
+const BIGART={"big_trike":["................................................................................................","..............................h.................................................................","..............................m.................................................................","..........................h.hllh.h..............................................................","..m......................hllllmlld..............................................................","...m..m.................hllmmmmmllh.............................................................","....m..mm..............hlmmmmmmmmmlh............................................................",".....ml..m.............llmmmmmmmmmld............................................................","......dlh.m...........llmmmmmmmmmmld............................................................",".......dmhlm.........hlmmmmmmmmmmmmlh...........................................................","........dmmlm........lmmmmmmmmmmmmmld...........................................................",".........dmmlmm......lmmmmmmmmmmmmmld...........................................................","..........dmmllm.....lmmmmmmmmmmmmmld...........................................................","...........dmmllm...hmmmmmmmmmmmmmmldm.......................m.m.m..............................","............ddmllm..lmmmmmmmmmmmmmll.................h.hhhhhh.h.h.hh.h..........................","..............dmllm.lmmmmmmmmmmmmmld............hmhmhmhmmmmmmhmhmhmmhmhhh.......................","...............dmmlmlmmmdmmmmmmmmmld........hmhmd.m.lmmmmmmmmmmmmmmmmmmmml......................","................dmmlmmmmdmmmmmmmmmldm.......m.m.m.lhmmmmmmmmmmmmmmmmmmmmmdm.....................","..........h......dmmlmmmdmmmmmmmmll.....hmhhd.lhmhmmmmmmmmmmmmmmmmmmmmmmd..m....................","..........m.......lmmmmdmmmmmmmmmld...hhd.lmmhmmmmmmmmdmmmmmmmmmmmmmmmmmd.h..m..................","..........m....hhhmmmmmdmmmmmmmmll..hhmmmhmmmmmmdmdmdd.lmmddddmmmmmmddddd.m.h...................","..........dh.hhmmmmmmmmdmmmmmmmmlmhhmmmmmmmmdmdd.m.m.m.lmd....lmmmmdmm...md.m.lm................","...........lhmmmmoommmmdmmmmmmmllmmmmmmmdmddtmtmtmtm.lhdd.h...lmmmdmmlm....md.d.lm..............","..........hmmmmmmommmmmdmmmmmmmlmmmmmmmd.m.m.m.m.m.d.ld.m.m...lmmmddmdm...l..m..d...............","........hhmmmmmmmmmmmmmddmmmmmlmmmmmmmdd.m.m.m.m.d..hdd.m.d...lmmmd.dmmm..dll.hm..mm............",".......hmmmmmmmmmmmmmmmmdmmmmlmmmmmmmd.m.m.m.d.dh.hmd.m.m..l..lmmmd.ddd.ml.ddtmthmt.hm..........",".....hhmmmmmmmmmmmmmmmmmdmmmlmmmmmmmmd.dhdhdh.htm.m.m.m.dh.dl.dmmmmhddd..dm..mdtm.hmd..m........","....hmmmoommmmmmmmmmmmmmdmmlmmddmmmmmmh.m.m.m.mtm.m.m.m..m..d..lmmmddddm...m...ld.m.m.h.........","....lmmmmmmmmmmmmmmmmmmdddmmdd..lmmmmmd.m.m.m.mtm.m.m.dh.m.....lmmmddddd....m..d.ld.lmd.........","...hmmmmmmmmmmmmmmmmmmd...dd....lmmmmmd.m.m.m.mtm.m.dh.m.dh....lmmmd.ddd.......t.ddld.lmh.......","..mmmmmmmmmmmddddddddmd........hmmmmmmd.m.m.m.mtm.d..m.m..m....lmmmd.ddd.......t...d.md.lm......","...dmmmmmmmmd........m.........lmmmmddmhdhd.m.mtd..h.m.dh.d....dmmmd.ddd.......t......dmd.h.....","....ddmmmmmmmhhhhhhohmh........ddmmd..ldmm.hdhdh.h.m.m..m.......lmmmhdddm......t........dlmmm...","......lmmmmmmmmmmmoommmlm........dmmh.ddhd.m.m.m.m.m.dh.d.......lmmmddddd......t.........dd..mm.","......ddddddmmmmmmommmmd..........dmd..mldhd.m.m.m.dh.m.........lmmmd.ddd......t...........mm..m","............ddddddddddd............lmh..dmldhdhd.dh.m.d.........lmmdd.ddd......t.............m..","...................tssssss.........dmmh.mddmm.mth.m.d...........lmd.d.ddd......t................","......................t.............dmd..dmdd.dtm.m.............lmmh.mddd......t................","......................t..............lmhm.ddm..td.d............hmmdd.ddd.......t................","......................t..............ldd...d...t...............lmd.m.ddd.......t................","......................t..............m.m..m....t...............lmd.d.ddd.......t................","......................t..............d.d..d....t...............lmmh..ddd.......t................","......................t.............h.h...d....t..............hmmdd.mddd.......t................","......................t.............m.m...d....t..............lmd.m.ddd........t................","......................t............hd.m..m.....t..............dmd.d.ddd........t................","......................t............ld.d..d.....t...............ld...dd.........t................","......................t............ld...md.....t..............hmmm.mddm........t................","......................t...........hmmm.mddm....t............lmmddmmddd.........t................","..............t.......t..........mmdd.mddd.....t...........md.d.dddd.d.........t.......t........","..............ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss........"],"big_whale":["............................................................................................","............................................................................................","............................................................................................","............................................................................................",".................................h..........................................................","...............................llll.........................................................","..............................hdddml........................................................","..............................ddddml........................................................",".............................dddddml......m..m..m..m..m..m..................................","............................ddddddmlh....h..h..h..h..h..h...m...............................","............................ddddddmld.h..m..m..m..m..m..m..h..h.............................","...........................ddddddmmmd.m..lhdmhdmhdmhdmhdmhdd..m..h..h.......................",".........................hddddddmmmmmdmhhmmmmmdmmdmmdmmdmmdmhdmhdd..m..h....................","......................hhhmmmmmmmmmmmmdmmmmmmmddmddmddmddmddmmdmmdmhdmldd....................","...................hhhmmmmmmmmmmmommmdmmmmmdd..m..m..m..m..lddmddmmdmddmld..................","...............hhhhmmmmmmmmmmmmmmmmmd.lmmmd.m..m..m..m..m..m..m..dddd..lddhld...............","..........hhhhhmmmmmmmmmmmmmmmmdddddd.lmmmd.m..m..m..m..m..m..m.....d..m..ldd...............","......hhhhmmmmmmmmmmmddmddmdddd.......lmddd.m..m..m..mtsmtsm..m........d..m..hld............",".mmhhhmmhmmhmmhmmhmmh..h..h...........dd..m.dh.dh.dh.dh.dh.dh.dh..........d..lddhld.........","...lmmmmmmmmmmmmmmmmmhhmhhmhhh.........m..lh.mmmm..m..m.tm..m..m.............m..ldd.........","...dddmmmmmmmmmmmmmmmmmmmmmmmmlm.......d..dmhmhdmm.m..m.td..m..d.............dtsmtshmm......","......ddddddddddddddddddddddddd.........m..lmdmdmhmdh.dht.h.dl..................d..m........","..........................t................dmmdmddd.m..mt.m..d..................t..d..mm....","..........................t.................ddmdmddmd..dl.dm....................t.......mm..","..........................t...................dmdmddmh..d.......................t.........mm","..........................t....................dmdmmdd..t.......................t...........","..........................t.....................dddmmdm.t.......................t...........","..........................t.......................ddmdm.t.......................t...........","..........................t.........................dmmmt.......................t...........","..........................t.............................t.......................t...........","..........................t.............................t.......................t...........","..........................t.............................t.......................t...........","..................t.......t.............................t.......................t.......t...","..................sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss..."]};
 const bigArtCache={};
 const bigW=id=>BIGART[id]?BIGART[id][0].length:48;
 function bigArtURL(id){if(bigArtCache[id])return bigArtCache[id];const d=SPEC[id],fg=d.fg,hi=d.hi;const pal={o:shade(fg,-.62),d:shade(fg,-.28),m:fg,l:shade(fg,.22),h:shade(fg,.5),a:hi,b:shade(hi,-.35),c:shade(hi,.3),w:'#ffffff',k:'#15110d',s:'#2A2D31',t:'#5A6068'};return bigArtCache[id]=gridURL(BIGART[id].map(r=>[...r].map(ch=>ch==='.'?null:ch)),pal);}
@@ -3793,7 +3799,7 @@ const HT={ // 裝潢：1 = 一、二星；2 = 三、四星；3 = 五星
      dais:'#EDE8DE',daisH:'#FFFFFF',daisD:'#C2BAAA',post:'#C9A24A',postH:'#F2D58A',rope:'#8E2430',ropeD:'#661821',door:'#2A1A14',lit:[255,232,180],litA:.16,plate:'#EAD9A6',marble:true}
 };
 const hallTier=()=>S.star>=5?3:S.star>=3?2:1;
-function hR(c,col,x,y,w,h){c.fillStyle=col;c.fillRect(x,y,w,h);}
+function hR(c,col,x,y,w,h){c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
 function hL(c,col,x0,y0,x1,y1){c.fillStyle=col;let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,e=dx+dy;for(let k=0;k<600;k++){c.fillRect(x0,y0,1,1);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx;}if(e2<=dx){e+=dx;y0+=sy;}}}
 function gridCanvas(g,pal){const h=g.length,w=g[0].length,c=cvs(w,h),x=c.getContext('2d');for(let y=0;y<h;y++)for(let i=0;i<w;i++){const v=g[y][i];if(v==null)continue;x.fillStyle=(pal&&pal[v])||v;x.fillRect(i,y,1,1);}return c;}
 function bigArtCanvas(id){
@@ -4003,9 +4009,10 @@ function hallFit(){
   const maxCssH=Math.min(innerHeight*.5,460);let s=Math.max(1,Math.floor(dev/220));
   while(s>1&&HH*s/dpr>maxCssH)s--;
   let W=Math.min(640,Math.floor(dev/s)),fill=false;const need=hallNeedW();
-  if(W<need){W=need;s=Math.max(1,Math.ceil(dev/W));fill=true;}
+  // 放不下全部展品時，改用比較小的整數倍數把畫面變寬；一定要整數倍，不然像素會一格寬一格窄（人會大小眼）
+  if(W<need){const s2=Math.floor(dev/need);if(s2>=1){s=s2;W=Math.floor(dev/s);}else{W=need;s=1;fill=true;}}
   if(W!==HALL.W||s!==HALL.s||fill!==HALL.fill){HALL.W=W;HALL.s=s;HALL.fill=fill;HALL.cv.width=W*s;HALL.cv.height=HH*s;
-    if(fill){HALL.cv.style.width='100%';HALL.cv.style.height='auto';}else{HALL.cv.style.width=(W*s/dpr)+'px';HALL.cv.style.height=(HH*s/dpr)+'px';}
+    if(fill){HALL.cv.style.width='100%';HALL.cv.style.height='auto';HALL.cv.style.imageRendering='auto';}else{HALL.cv.style.width=(W*s/dpr)+'px';HALL.cv.style.height=(HH*s/dpr)+'px';HALL.cv.style.imageRendering='';}
     HALL.off.width=W;HALL.off.height=HH;HALL.bg.width=W;HALL.bg.height=HH;HALL.key='';HALL.cx.imageSmoothingEnabled=false;}
   return true;
 }
@@ -4591,6 +4598,399 @@ function novMorning(){
 function novRetry(){if(S.novWait&&placeItem(S.novWait,null)){S.novWait=null;toast('正模標本送到標本工坊了。');renderGrid();}}
 const novList=()=>Object.keys(NOV).filter(k=>(S.nov||{})[k]==='pub').map(k=>NOV[k].nov);
 
+/* ================= 市集、商店、網路商店的動畫場景 ================= */
+// 跟展示廳同一套人物點陣圖。邏輯高度固定、寬依畫面 240–520，一律整數倍放大（不然像素會一格寬一格窄）。
+// 市集依地點換場景：台灣＝建國假日玉市（高架橋下的攤位）、緬甸＝曼德勒玉石市場（露天、鐵皮棚、遮陽傘），
+// 其他地方是化石礦物店（店面、層架、玻璃櫃台）。網路商店是館長的工作室：有人下單就拿貨、打包，宅配來收件。
+const SCH={market:124,shop:112};
+const SC={};
+const scRng=seed=>{let a=seed>>>0||1;return()=>{a^=a<<13;a>>>=0;a^=a>>17;a^=a<<5;a>>>=0;return a/4294967296;};};
+function scMake(key){
+  const wrap=document.getElementById(key+'W'),cv=document.getElementById(key+'Cv');if(!cv)return null;
+  const o=SC[key]={key,wrap,cv,cx:cv.getContext('2d'),off:cvs(10,10),bg:cvs(10,10),fg:cvs(10,10),W:0,s:0,H:SCH[key],ppl:[],on:false,raf:0,last:0,bgKey:'',spawnT:1,lay:null,fx:[],capAt:0};
+  o.g=o.off.getContext('2d');return o;
+}
+function scFit(o){
+  const cw=o.wrap.clientWidth;if(!cw)return false;const dpr=window.devicePixelRatio||1,dev=cw*dpr;
+  const maxCssH=Math.min(innerHeight*.42,360);let s=Math.max(1,Math.floor(dev/240));
+  while(s>1&&o.H*s/dpr>maxCssH)s--;
+  const W=Math.min(640,Math.floor(dev/s));
+  if(W!==o.W||s!==o.s){o.W=W;o.s=s;o.cv.width=W*s;o.cv.height=o.H*s;o.cv.style.width=(W*s/dpr)+'px';o.cv.style.height=(o.H*s/dpr)+'px';
+    [o.off,o.bg,o.fg].forEach(c=>{c.width=W;c.height=o.H;});o.g=o.off.getContext('2d');o.bgKey='';o.cx.imageSmoothingEnabled=false;}
+  return true;
+}
+function scShow(key,on){
+  const o=SC[key]||scMake(key);if(!o)return;o.on=on;
+  if(on){if(!o.raf){o.last=0;o.raf=requestAnimationFrame(ts=>scLoop(o,ts));}}
+  else if(o.raf){cancelAnimationFrame(o.raf);o.raf=0;}
+}
+function scLoop(o,ts){
+  o.raf=0;if(!o.on||!S)return;
+  const dt=Math.min(.05,(ts-(o.last||ts))/1000);o.last=ts;
+  if(scFit(o)){
+    const k=o.key==='market'?mkSceneKey():shopSceneKey();
+    if(k!==o.bgKey){o.bgKey=k;o.ppl=o.ppl.filter(p=>p.keep);o.key==='market'?mkBuild(o):shopBuild(o);}
+    if(!S.pausedAt&&!dayOpen&&!document.hidden)(o.key==='market'?mkUpdate:shopUpdate)(o,dt);
+    scDraw(o);
+  }
+  o.raf=requestAnimationFrame(t=>scLoop(o,t));
+}
+function scDraw(o){
+  const g=o.g;g.clearRect(0,0,o.W,o.H);g.drawImage(o.bg,0,0);
+  // 攤販、店員在桌子後面：先畫人，再蓋上桌子
+  o.ppl.filter(p=>p.behind).forEach(p=>hallDrawP(g,p));
+  g.drawImage(o.fg,0,0);
+  (o.draw2||(()=>{}))(o,g);
+  o.ppl.filter(p=>!p.behind).sort((a,b)=>a.y-b.y).forEach(p=>hallDrawP(g,p));
+  o.fx=o.fx.filter(f=>f.t>0);o.fx.forEach(f=>f.d(g,f));
+  const pr=S?dayProg():0;if(pr>.75&&o.outdoor){g.fillStyle=`rgba(255,150,70,${Math.min(.14,(pr-.75)*.6)})`;g.fillRect(0,0,o.W,o.H);}
+  o.cx.clearRect(0,0,o.cv.width,o.cv.height);o.cx.drawImage(o.off,0,0,o.W*o.s,o.H*o.s);
+}
+// 一個人：走到 tx,ty；到了就照 todo 做下一件事
+function scPerson(o,kind,opt){
+  const P=opt&&opt.P||pplMake(kind,opt&&opt.npc);
+  const p=Object.assign({P,kind,x:-10,y:104,dir:1,st:'walk',t:0,anim:0,delay:0,todo:[],speed:16+rnd()*6,bub:null,bt:0},opt||{});
+  o.ppl.push(p);return p;
+}
+function scStep(o,p,dt){
+  p.bt+=dt;if(p.bub&&p.bt>2.4){p.bub=null;}
+  if(p.st==='walk'){
+    const dx=p.tx-p.x,dy=(p.ty??p.y)-p.y,d=Math.hypot(dx,dy);
+    if(d<1){p.x=p.tx;p.y=p.ty??p.y;p.st='idle';p.t=0;p.dir=0;if(p.arrive)p.arrive(p);return;}
+    const v=Math.min(d,p.speed*dt);p.x+=dx/d*v;p.y+=dy/d*v;p.dir=Math.abs(dx)>.3?Math.sign(dx):p.dir;p.anim+=dt;
+  }else{p.t+=dt;if(p.wait!=null&&p.t>=p.wait){p.wait=null;const f=p.next;p.next=null;if(f)f(p);}}
+}
+const scGo=(p,x,y,arrive)=>{p.tx=x;p.ty=y;p.st='walk';p.arrive=arrive||null;};
+const scWait=(p,s,next,look)=>{p.st=look?'look':'idle';p.t=0;p.wait=s;p.next=next;};
+const scSay=(p,b)=>{p.bub=b;p.bt=0;};
+function scCap(o,t,force){const n=performance.now();if(!force&&n-o.capAt<5000)return;o.capAt=n;const el=document.getElementById(o.key+'Cap');if(el)el.innerHTML=t;}
+// 館長：卡其色田野背心、後背包
+function pplMakeMe(){
+  if(SC.me)return SC.me;
+  const look=pplLook('adult');Object.assign(look,{hs:'short',body:'vest',legs:'pants',acc:['pack']});
+  Object.assign(look.pal,{H:'#2B2420',s:'#E8B48A',t:'#E7E2D6',V:'#9C8458',p:'#4A4E58'});look.pal.T=shade(look.pal.t,-.15);
+  const head=PPL_HEAD.short,body=PPL_BODY.vest,legs=PPL_LEGS.pants,fr={};
+  for(const d of[-1,0,1]){const hd=pplEyes(head,d,false),er=hd.findIndex(r=>r.includes('E')),ec=[];[...hd[er]].forEach((ch,i)=>{if(ch==='E')ec.push(i+1);});
+    fr[d]=legs.map(lg=>pplSprite([...hd,...body,...lg],look.pal,pplAcc(look,{eyeRow:er+1,eyeCols:ec,bodyRow:head.length+1},false)));}
+  const back=pplSprite([...pplBack(head,false),...pplBackBody(body,'V'),...legs[1]],look.pal,pplAcc(look,{eyeRow:0,eyeCols:[],bodyRow:head.length+1},true));
+  return SC.me=Object.assign(look,{fr,back,w:fr[0][1].width,h:fr[0][1].height,me:true});
+}
+// 小圖示（加在對話泡泡裡）
+HICON.coin=["..yyy..",".yokoy.",".yokky.",".yykoy.",".yokoy.","..yyy.."];
+HICON.light=["y.y.y..",".yyy...","yywyy..",".yyy...","y.y.y..","......."];
+HICOL.w='#FFFFFF';
+
+/* ---------- 市集 ---------- */
+function mkSceneKey(){const o=SC.market;return [o.W,S.region,mkOpen()?1:0,S.day,S.npcMet&&S.npcMet.kun?1:0].join('|');}
+function mkKind(){return S.region==='tw'?'tw':S.region==='mm'?'mm':'store';}
+function mkBuild(o){
+  const r=scRng(S.day*131+(S.region.charCodeAt(0)<<3)),open=mkOpen(),k=mkKind();
+  o.outdoor=k!=='store';o.lay={k,open,stalls:[]};
+  const b=o.bg.getContext('2d'),f=o.fg.getContext('2d');b.clearRect(0,0,o.W,o.H);f.clearRect(0,0,o.W,o.H);
+  if(k==='tw')mkBgTw(o,b,f,r,open);else if(k==='mm')mkBgMm(o,b,f,r,open);else mkBgStore(o,b,f,r,open);
+  // 攤販、店員
+  o.ppl=o.ppl.filter(p=>!p.staff);
+  if(open)o.lay.stalls.forEach((st,i)=>{if(st.noVendor)return;
+    const npc=k==='tw'&&i===1&&S.npcMet&&S.npcMet.kun?'kun':null;
+    const p=scPerson(o,k==='mm'?'adult':pick(['adult','adult','old']),{npc,staff:true,behind:true,x:st.vx,y:st.vy,st:'idle',dir:0,tx:st.vx});
+    if(k==='mm')mmLongyi(p);st.vendor=p;});
+  o.spawnT=.6;o.meDone=false;
+  if(open){const n=k==='store'?2:Math.min(6,2+Math.floor(o.lay.stalls.length/2)+(wd()>=5?2:0));for(let q=0;q<n;q++)mkShopper(o,false,true);}
+  scCap(o,mkCapLine(o),true);
+}
+// 緬甸男生穿的籠基（長裙），用裙子的腳加上格子色
+function mmLongyi(p){
+  const L=p.P;if(L.kid)return;const pal=Object.assign({},L.pal,{D:pick(['#4A6A4A','#5A4A3A','#3E5A7A','#6A3A3A'])});
+  const head=PPL_HEAD[L.hs]||PPL_HEAD.short,body=PPL_BODY[L.body]||PPL_BODY.tee,legs=PPL_LEGS.skirt,fr={};
+  const lg2=legs.map(l=>l.map((row,y)=>y<2?row:row));
+  for(const d of[-1,0,1]){const hd=pplEyes(head,d,false),er=hd.findIndex(r=>r.includes('E')),ec=[];[...hd[er]].forEach((ch,i)=>{if(ch==='E')ec.push(i+1);});
+    fr[d]=lg2.map(lg=>pplSprite([...hd,...body,...lg],pal,pplAcc(L,{eyeRow:er+1,eyeCols:ec,bodyRow:head.length+1},false)));}
+  const back=pplSprite([...pplBack(head,L.hs==='bald'),...pplBackBody(body,'t'),...lg2[1]],pal,pplAcc(L,{eyeRow:0,eyeCols:[],bodyRow:head.length+1},true));
+  p.P=Object.assign({},L,{pal,fr,back});
+}
+const MK_TW_GOODS=[['bangle','#5FA86E'],['bangle','#8FCB9A'],['pend','#4E9A5E'],['pend','#E9E4D6'],['stone','#7A8A6A'],['stone','#8C7A5E'],['amber','#E0A23A'],['rose','#E39AA6'],['bead','#3E7A5A'],['blue','#4F9AC0']];
+function mkGood(c,kind,col,x,y){
+  if(kind==='bangle'){hR(c,col,x,y,4,1);hR(c,col,x,y+3,4,1);hR(c,col,x-1,y+1,1,2);hR(c,col,x+4,y+1,1,2);hR(c,shade(col,.4),x,y,2,1);}
+  else if(kind==='pend'){hR(c,col,x,y+1,3,3);hR(c,shade(col,.35),x,y+1,1,1);hR(c,'#C9A24A',x+1,y,1,1);}
+  else if(kind==='stone'){hR(c,col,x,y+1,5,3);hR(c,col,x+1,y,3,1);hR(c,shade(col,.25),x+1,y+1,2,1);hR(c,shade(col,-.3),x,y+3,5,1);hR(c,'#7FCB8A',x+3,y+1,1,1);}
+  else if(kind==='amber'){hR(c,col,x,y+1,3,2);hR(c,shade(col,.45),x,y+1,1,1);}
+  else if(kind==='rose'){hR(c,col,x,y+1,4,2);hR(c,shade(col,.3),x,y+1,2,1);hR(c,'#2B2420',x+2,y+2,1,1);}
+  else if(kind==='bead'){for(let i=0;i<5;i++)hR(c,i%2?col:shade(col,.3),x+i,y+2+(i===2?1:0),1,1);}
+  else if(kind==='blue'){hR(c,col,x,y+1,3,3);hR(c,shade(col,.45),x,y+1,1,1);hR(c,'#E9E4D6',x+1,y+2,1,1);}
+  else if(kind==='geode'){hR(c,'#8C8478',x,y,6,5);hR(c,col,x+1,y+1,4,3);hR(c,shade(col,.4),x+1,y+1,2,1);}
+  else if(kind==='ammo'){hR(c,col,x+1,y,4,1);hR(c,col,x,y+1,1,3);hR(c,col,x+5,y+1,1,3);hR(c,col,x+1,y+4,4,1);hR(c,shade(col,-.3),x+2,y+2,2,1);hR(c,shade(col,.3),x+1,y+1,1,1);}
+  else if(kind==='tri'){hR(c,'#C9B898',x,y,7,5);hR(c,col,x+2,y+1,3,3);hR(c,col,x+3,y,1,1);hR(c,shade(col,.3),x+2,y+1,1,1);}
+  else if(kind==='plate'){hR(c,'#D8C9A2',x,y,8,6);hR(c,shade('#D8C9A2',-.15),x,y+5,8,1);hR(c,col,x+2,y+2,4,1);hR(c,col,x+3,y+1,2,3);}
+  else if(kind==='ortho'){hR(c,'#2E2A28',x,y,8,5);hR(c,col,x+1,y+2,6,1);for(let i=1;i<7;i+=2)hR(c,shade(col,.3),x+i,y+2,1,1);}
+}
+function mkText(c,txt,col,bg,x,y,size){const t=hallText(txt,col,size||12);if(bg){hR(c,bg,x-2,y-1,t.width+3,t.height);}c.drawImage(t,x,y);return t.width;}
+/* 建國假日玉市：高架橋下面，一排攤位、日光燈 */
+function mkBgTw(o,b,f,r,open){
+  const W=o.W,H=o.H;
+  // 高架橋底面和樑
+  hR(b,'#7A7D7A',0,0,W,12);hR(b,'#6A6D6A',0,4,W,1);hR(b,'#5E615E',0,11,W,2);hR(b,'#8C8F8B',0,0,W,1);
+  // 後面暗暗的空間
+  hR(b,'#3C4146',0,13,W,52);hR(b,'#353A3F',0,13,W,3);
+  // 橋墩
+  const pil=[Math.round(W*.04),Math.round(W*.5)-7,Math.round(W*.96)-14];
+  pil.forEach(x=>{hR(b,'#9A9C98',x,10,14,76);hR(b,'#B5B7B2',x,10,2,76);hR(b,'#777A76',x+12,10,2,76);hR(b,'#8A8C88',x-2,10,18,3);});
+  // 掛著的布條招牌
+  const signs=['玉','翡翠','手鐲','原石','玉石','藍玉髓'];
+  // 攤位
+  const sw=58,n=Math.max(2,Math.floor((W-8)/(sw+6))),x0=Math.round((W-(n*sw+(n-1)*6))/2),TY=64;
+  for(let i=0;i<n;i++){
+    const x=x0+i*(sw+6),cl=['#2F5D4A','#8E2F2F','#2F4A6E','#5A3A5E'][i%4];
+    if(open){const t=signs[(i+S.day)%signs.length],tw=hallText(t,'#F2D58A',12).width;hR(b,'#B0302A',x+sw/2-tw/2-3,18,tw+6,15);hR(b,'#8A2420',x+sw/2-tw/2-3,32,tw+6,1);hR(b,'#E8C860',x+sw/2-tw/2-3,18,tw+6,1);mkText(b,t,'#F2D58A',null,Math.round(x+sw/2-tw/2),19);}
+    // 日光燈
+    hR(b,'#F4F6F0',x+sw/2-8,15,16,1);b.fillStyle='rgba(240,250,255,.06)';b.fillRect(x+4,16,sw-8,46);
+    // 桌子：桌面＋前面的布
+    hR(f,'#4A3A2E',x,TY-2,sw,2);hR(f,open?cl:'#4E6E9A',x,TY,sw,17);hR(f,shade(open?cl:'#4E6E9A',.18),x,TY,sw,1);hR(f,shade(open?cl:'#4E6E9A',-.25),x,TY+16,sw,1);
+    hR(f,'rgba(0,0,0,.25)',x+1,TY+17,sw-2,2);
+    for(let k=4;k<sw;k+=9)hR(f,shade(open?cl:'#4E6E9A',-.12),x+k,TY+2,1,14);
+    if(open){
+      // 玻璃展示盒＋貨
+      hR(f,'#CFE6F2',x+3,TY-9,22,1);hR(f,'#CFE6F2',x+3,TY-9,1,7);hR(f,'#CFE6F2',x+24,TY-9,1,7);f.fillStyle='rgba(207,230,242,.18)';f.fillRect(x+4,TY-8,20,6);
+      for(let k=0;k<6;k++){const gd=MK_TW_GOODS[Math.floor(r()*MK_TW_GOODS.length)];mkGood(f,gd[0],gd[1],x+5+(k%3)*6,TY-8+Math.floor(k/3)*3);}
+      for(let k=0;k<4;k++){const gd=MK_TW_GOODS[Math.floor(r()*MK_TW_GOODS.length)];mkGood(f,gd[0],gd[1],x+29+k*7,TY-5);}
+      hR(f,'#F4F1EA',x+sw-12,TY-7,8,5);hR(f,'#2B2420',x+sw-11,TY-5,6,1);   // 價錢牌
+    }else{
+      // 沒開：蓋著藍色帆布
+      hR(f,'#4E6E9A',x-1,TY-8,sw+2,8);hR(f,'#6A8AB6',x,TY-8,sw,1);for(let k=6;k<sw;k+=12)hR(f,'#3E5A80',x+k,TY-7,1,7);
+    }
+    o.lay.stalls.push({x,w:sw,cx:x+sw/2,vx:Math.round(x+sw/2+(i%2?-6:6)),vy:TY+2});
+  }
+  // 地板：水泥地
+  hR(b,'#8E8B82',0,81,W,H-81);hR(b,'#7A776F',0,81,W,1);for(let x=0;x<W;x+=40)hR(b,'#817E76',x,82,1,H-82);hR(b,'#817E76',0,104,W,1);
+  if(!open)mkText(f,'今天沒有開市',`#E9E4D6`,'rgba(30,30,34,.7)',Math.round(W/2-36),40);
+}
+/* 曼德勒玉石市場：露天、鐵皮棚、遮陽傘、地上和矮桌上的玉石原石 */
+function mkBgMm(o,b,f,r,open){
+  const W=o.W,H=o.H;
+  for(let y=0;y<30;y++){hR(b,y<12?'#E9D7B0':y<22?'#E2CB9C':'#D8BD8A',0,y,W,1);}
+  // 鐵皮棚
+  for(let x=-10;x<W;x+=70){const w=60;hR(b,'#8A949A',x,22,w,9);for(let k=0;k<w;k+=3)hR(b,'#6E787E',x+k,22,1,9);hR(b,'#A0AAB0',x,22,w,1);hR(b,'#9A5A3A',x+12,26,5,2);hR(b,'#5A4A3A',x+4,31,2,40);hR(b,'#5A4A3A',x+w-6,31,2,40);}
+  hR(b,'#6A5642',0,31,W,36);hR(b,'#5E4C3A',0,31,W,4);
+  const sw=60,n=Math.max(2,Math.floor((W-8)/(sw+6))),x0=Math.round((W-(n*sw+(n-1)*6))/2),TY=68;
+  for(let i=0;i<n;i++){
+    const x=x0+i*(sw+6);
+    // 遮陽傘
+    if(open&&i%2===0){const uc=['#C2453A','#3E6E9A','#E0A23A','#3E8C5A'][(i/2+S.day)%4|0],cx=Math.round(x+sw/2),R=26,base=44;
+      hR(b,'#4A3A2A',cx,base-6,1,30);
+      for(let k=-R;k<=R;k++){const top=base-Math.round(Math.sqrt(1-(k/R)**2)*8),seg=Math.floor((k+R)/9)%2;hR(b,seg?uc:shade(uc,.28),cx+k,top,1,base-top+1);hR(b,shade(seg?uc:shade(uc,.28),.25),cx+k,top,1,1);}
+      for(let k=-R;k<=R;k+=9)hR(b,shade(uc,-.35),cx+k,base+1,9,1);hR(b,'#4A3A2A',cx,base-9,1,2);}
+    // 矮桌
+    hR(f,'#7A5A3A',x+4,TY-1,sw-8,3);hR(f,'#5A4028',x+4,TY+2,sw-8,1);hR(f,'#5A4028',x+6,TY+3,2,9);hR(f,'#5A4028',x+sw-8,TY+3,2,9);
+    if(open){
+      for(let k=0;k<5;k++){const sx=x+7+k*10,sz=3+Math.floor(r()*3),skin=pick(['#8C7A5A','#A08A62','#6E6650','#7A6A4A']);
+        hR(f,skin,sx,TY-sz-1,sz+3,sz+1);hR(f,shade(skin,.2),sx+1,TY-sz-1,sz+1,1);hR(f,shade(skin,-.3),sx,TY-1,sz+3,1);
+        if(r()<.6){hR(f,'#5FBF7A',sx+1,TY-sz,2,2);hR(f,'#A6E8B4',sx+1,TY-sz,1,1);}}
+      // 地上的大塊原石
+      const bx=x+sw-14,skin='#7A6A4A';hR(f,skin,bx,TY+5,12,7);hR(f,skin,bx+2,TY+3,8,2);hR(f,shade(skin,.2),bx+2,TY+3,6,1);hR(f,shade(skin,-.3),bx,TY+11,12,1);hR(f,'#4FAF6A',bx+3,TY+6,4,3);hR(f,'#A6E8B4',bx+3,TY+6,2,1);
+    }
+    o.lay.stalls.push({x,w:sw,cx:x+sw/2,vx:Math.round(x+sw/2+(i%2?-8:8)),vy:TY+4});
+  }
+  // 地面：塵土
+  hR(b,'#B89A72',0,79,W,H-79);hR(b,'#A88A62',0,79,W,1);for(let k=0;k<W*1.2;k++){hR(b,r()<.5?'#A88C66':'#C4A87E',Math.floor(r()*W),80+Math.floor(r()*(H-80)),1,1);}
+  if(!open)mkText(f,'今天沒有開市','#E9E4D6','rgba(30,30,34,.7)',Math.round(W/2-36),46);
+}
+/* 化石礦物店：櫥窗、層架上的標本、展示台、玻璃櫃台 */
+const STORE_LOOK={
+  us:{wall:'#D9C7A8',trim:'#7A5A3A',out:['#9CC8E8','#D8B48A'],sign:'ROCKS & FOSSILS',floor:'#9A7A5A'},
+  uk:{wall:'#C9D2D4',trim:'#3E5A6A',out:['#C8D0D4','#8FA2AC'],sign:'FOSSIL SHOP',floor:'#8E7A62'},
+  de:{wall:'#E4DDCC',trim:'#4A5A3A',out:['#BFD8E8','#7A9A5A'],sign:'FOSSILIEN',floor:'#9A7A5A'},
+  ma:{wall:'#E8CFA0',trim:'#A0502E',out:['#8CC4E8','#E8C890'],sign:'FOSSILES',floor:'#C8A274'}
+};
+const sprMiniC={};
+function sprMini(id){if(sprMiniC[id])return sprMiniC[id];const d=SPEC[id],big=spriteCanvas(d.g,d.fg,d.hi),c=cvs(8,8),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(big,0,0,8,8);return sprMiniC[id]=c;}
+function mkBgStore(o,b,f,r,open){
+  const W=o.W,H=o.H,L=STORE_LOOK[S.region]||STORE_LOOK.us,M=MARKETS[S.region];
+  const ids=M.pool.map(q=>q[0]).filter(id=>SPEC[id]&&!SPEC[id].big),pk=()=>ids[Math.floor(r()*ids.length)];
+  const best=ids.slice().sort((a,c)=>(SPEC[c].val||0)-(SPEC[a].val||0));
+  // 牆、踢腳板、天花板的燈
+  hR(b,L.wall,0,0,W,84);hR(b,shade(L.wall,-.12),0,0,W,3);hR(b,shade(L.wall,-.06),0,3,W,1);hR(b,L.trim,0,78,W,6);hR(b,shade(L.trim,.2),0,78,W,1);
+  for(let x=60;x<W-10;x+=90){hR(b,'#3A3430',x,3,1,6);hR(b,'#3A3430',x-3,9,7,2);b.fillStyle='rgba(255,236,190,.10)';b.fillRect(x-14,11,29,60);hR(b,'#FFF2C8',x-2,11,5,1);}
+  // 摩洛哥：門邊掛一張地毯
+  if(S.region==='ma'){const kx=50;hR(b,'#8E2F2F',kx,16,18,40);hR(b,'#B04A3A',kx+1,17,16,38);for(let y=20;y<54;y+=6){hR(b,'#E0A23A',kx+4,y,10,1);hR(b,'#2F4A6E',kx+7,y+2,4,2);}for(let x=kx;x<kx+18;x+=2)hR(b,'#E8D6B0',x,56,1,3);}
+  // 櫥窗（門）
+  const wx=10,ww=32;hR(b,L.trim,wx-2,16,ww+4,62);hR(b,L.out[0],wx,18,ww,32);hR(b,L.out[1],wx,50,ww,28);hR(b,shade(L.out[0],.3),wx+3,20,6,1);
+  if(S.region==='ma'){for(let k=0;k<ww;k+=4)hR(b,shade(L.out[1],-.1),wx+k,53+(k%8?1:0),3,1);hR(b,L.wall,wx,18,4,4);hR(b,L.wall,wx+ww-4,18,4,4);hR(b,L.wall,wx,18,2,7);hR(b,L.wall,wx+ww-2,18,2,7);}
+  if(S.region==='uk'){hR(b,'#6E8A9A',wx,46,ww,5);hR(b,'#E9E4D6',wx+8,47,6,1);hR(b,'#E9E4D6',wx+20,48,4,1);}
+  if(S.region==='de'){hR(b,'#5E7A44',wx+4,40,8,10);hR(b,'#6E8A54',wx+18,42,10,8);}
+  hR(b,shade(L.trim,-.2),wx+ww/2,18,1,60);hR(b,'#E6C46A',wx+ww/2+2,52,1,3);
+  // 招牌
+  const st=hallText(L.sign,'#F4F1EA',12),sx=Math.round(W*.42-st.width/2);hR(b,shade(L.trim,-.15),sx-4,14,st.width+8,16);hR(b,shade(L.trim,.15),sx-4,14,st.width+8,1);b.drawImage(st,sx,15);
+  // 層架：每一層放三件小標本
+  const cx0=Math.round(W*.6),units=Math.max(1,Math.min(4,Math.floor((cx0-(S.region==='ma'?78:56))/46)));
+  let ux=cx0-8-units*46;
+  for(let u=0;u<units;u++,ux+=46){
+    const fr=shade(L.trim,-.1);hR(b,shade(L.wall,-.1),ux,34,42,44);hR(b,fr,ux,33,42,2);hR(b,fr,ux,33,2,45);hR(b,fr,ux+40,33,2,45);
+    for(const sy of[48,62,76]){hR(b,fr,ux,sy,42,2);hR(b,shade(fr,.3),ux+2,sy,38,1);
+      for(let k=0;k<3;k++){if(r()<.85){const m=sprMini(pk());b.drawImage(m,ux+4+k*12,sy-8);}}}
+  }
+  // 展示台：店裡最貴的那件
+  // 牆上的框：一塊化石板
+  if(best[0]){const fx=cx0+Math.round((W-14-cx0)/2)-11;hR(b,shade(L.trim,-.2),fx,30,22,22);hR(b,'#E9E2D0',fx+2,32,18,18);b.drawImage(spriteCanvas(SPEC[best[0]].g,SPEC[best[0]].fg,SPEC[best[0]].hi),fx+3,33);}
+  // 玻璃櫃台
+  const cw=W-14-cx0,TY=74;
+  hR(f,'#3E3430',cx0,TY,cw,12);hR(f,shade('#3E3430',.25),cx0,TY,cw,1);hR(f,shade('#3E3430',-.3),cx0,TY+11,cw,1);
+  hR(f,'#CFE6F2',cx0,TY-11,cw,1);hR(f,'#CFE6F2',cx0,TY-11,1,11);hR(f,'#CFE6F2',cx0+cw-1,TY-11,1,11);f.fillStyle='rgba(207,230,242,.22)';f.fillRect(cx0+1,TY-10,cw-2,10);
+  for(let x=cx0+4;x<cx0+cw-28;x+=11){f.drawImage(sprMini(pk()),x,TY-9);}
+  hR(f,'#2B2420',cx0+cw-16,TY-17,12,6);hR(f,'#4A4A52',cx0+cw-15,TY-16,10,2);hR(f,'#7FCB8A',cx0+cw-14,TY-16,4,1);hR(f,'#2B2420',cx0+cw-12,TY-11,6,1);
+  // 地板
+  hR(b,L.floor,0,84,W,H-84);
+  if(S.region==='ma'){for(let y=84,k=0;y<H;y+=8,k++)for(let x=(k%2)*8;x<W;x+=16){hR(b,shade(L.floor,-.08),x,y,8,8);hR(b,shade(L.floor,.1),x+3,y+3,2,2);}}
+  else{for(let y=88;y<H;y+=6)hR(b,shade(L.floor,-.1),0,y,W,1);for(let y=84,k=0;y<H;y+=6,k++)for(let x=(k%2)*14;x<W;x+=28)hR(b,shade(L.floor,-.1),x,y,1,6);}
+  o.lay.stalls.push({x:cx0,w:cw,cx:cx0+cw/2,vx:cx0+cw-24,vy:TY+2});
+  o.lay.shelf={x0:cx0-8-units*46+6,x1:cx0-14};o.lay.door=wx+ww/2;
+  if(!open)mkText(f,'今天休息','#E9E4D6','rgba(30,30,34,.7)',Math.round(W/2-24),40);
+  o.outdoor=false;
+}
+function mkCapLine(o){
+  const k=o.lay.k,M=MARKETS[S.region];
+  if(!o.lay.open)return k==='tw'?`今天${M.name}沒有開，攤位都蓋著帆布。`:k==='mm'?'今天市場沒有開。':`${M.name}今天沒有營業。`;
+  const we=wd()>=5;
+  if(k==='tw')return pick([we?'週末的玉市人擠人，攤商一邊招呼客人一邊擦玉。':'今天的玉市人不多，老闆們泡著茶聊天。','日光燈底下，每只手鐲看起來都很綠。','有人拿著手電筒對著一塊原石照了很久。']);
+  if(k==='mm')return pick(['原石一塊一塊擺在矮桌上，買家拿著手電筒照皮殼。','鐵皮棚底下很熱，到處都在討價還價。','有人蹲在地上，用手電筒貼著一塊大原石的開窗看。']);
+  return pick([`${M.name}的架子上擺滿了化石和礦物。`,'店員在櫃台後面整理標價牌。','有客人拿起一塊標本，翻過來看底下的標籤。']);
+}
+const MK_LINES={
+  haggle:['{who}拿起一只手鐲對著燈看，跟老闆殺價。','{who}指著一塊原石問價錢，老闆比了個數字。','{who}跟老闆說：「再算便宜一點啦。」'],
+  look:['{who}彎腰看玻璃盒裡的墜子。','{who}拿起一塊石頭在手上掂了掂。','{who}對著日光燈看了很久，又放回去。'],
+  mm:['{who}拿手電筒貼著皮殼照，想看裡面透不透。','{who}跟賣家用計算機比價錢。','{who}蹲下來看地上的大塊原石。'],
+  store:['{who}拿起一塊菊石，翻過來看底下的標籤。','{who}在櫃台前問店員這塊是哪裡挖的。','{who}看著架上的晶洞看了很久。']
+};
+function mkWho(p){return p.P.me?'館長':p.npc==='kun'?'阿坤':p.P.kid?'一個小朋友':p.kind==='old'?'一位阿伯':pick(['一位客人','一位太太','一位先生','一個年輕人']);}
+function mkUpdate(o,dt){
+  const L=o.lay;if(!L)return;
+  o.ppl.forEach(p=>scStep(o,p,dt));
+  o.ppl=o.ppl.filter(p=>!(p.leave&&(p.x<-14||p.x>o.W+14)));
+  o.fx.forEach(f=>f.t-=dt);
+  // 館長進場逛一圈
+  if(L.open&&!o.meDone&&o.ppl.length>=0){o.meDone=true;mkShopper(o,true);}
+  o.spawnT-=dt;
+  const busy=L.open?(L.k==='store'?6:wd()>=5?1.8:3.2):14,cap=L.open?(L.k==='store'?4:Math.min(9,2+L.stalls.length*2)):2;
+  if(o.spawnT<=0){o.spawnT=busy*(.6+rnd()*.8);if(o.ppl.filter(p=>!p.staff).length<cap)mkShopper(o,false);}
+  // 攤販偶爾整理東西、招呼人
+  o.ppl.filter(p=>p.staff).forEach(p=>{if(!p.bub&&rnd()<dt*.04)scSay(p,pick(['dots','note']));});
+}
+function mkShopper(o,me,pre){
+  const L=o.lay,k=L.k,fromL=rnd()<.5,W=o.W;
+  const kind=me?'adult':pick(k==='mm'?['adult','adult','adult','old']:['adult','adult','old','kid','tourist']);
+  const p=scPerson(o,kind,me?{P:pplMakeMe()}:{});
+  if(k==='mm'&&!me)mmLongyi(p);
+  const lane=k==='store'?100+rnd()*10:96+rnd()*16;
+  p.x=k==='store'?L.door:(fromL?-10:W+10);p.y=lane;p.speed=me?18:14+rnd()*8;
+  if(pre)p.x=k==='store'?L.shelf.x0+rnd()*(L.shelf.x1-L.shelf.x0):12+rnd()*(W-24);
+  if(!L.open){scGo(p,fromL?W+12:-12,lane);p.leave=true;return p;}
+  const stops=k==='store'?[{shelf:true},{shelf:true},{counter:true}].slice(rnd()<.4?1:0):Array.from({length:me?3:1+Math.floor(rnd()*2)},()=>pick(L.stalls));
+  const go=()=>{
+    const st=stops.shift();
+    if(!st){p.leave=true;scGo(p,k==='store'?L.door:(rnd()<.5?-12:W+12),lane,k==='store'?(q=>{q.x=-20;}):null);return;}
+    let tx,ty;
+    if(st.shelf){tx=L.shelf.x0+rnd()*(L.shelf.x1-L.shelf.x0);ty=88;}
+    else if(st.counter){const c=L.stalls[0];tx=c.x+10+rnd()*(c.w-40);ty=90;}
+    else{tx=st.cx+(rnd()*2-1)*(st.w/2-10);ty=k==='mm'?86:88;}
+    scGo(p,tx,ty,q=>{
+      const dur=2+rnd()*3;scWait(q,dur,()=>{q.st='idle';go();},true);
+      const r=rnd(),who=mkWho(q);
+      if(st.counter||(!st.shelf&&r<.4)){setTimeout(()=>{if(q.st==='look'){scSay(q,'coin');if(st.vendor)setTimeout(()=>scSay(st.vendor,pick(['dots','bang','coin'])),700);}},600);
+        if(me||rnd()<.5)scCap(o,pick(k==='mm'?MK_LINES.mm:k==='store'?MK_LINES.store:MK_LINES.haggle).replace('{who}',who),me);}
+      else if(r<.7){if(k==='mm'){o.fx.push({t:dur,d:(g,f)=>{const x=Math.round(q.x)+3,y=Math.round(q.y)-11;g.fillStyle='rgba(255,236,150,.55)';g.fillRect(x,y,1,1);g.fillRect(x+1,y-1,2,1);g.fillRect(x+3,y-2,2,1);g.fillStyle='rgba(255,236,150,.25)';g.fillRect(x+1,y-2,4,3);}});}
+        if(rnd()<.4)scCap(o,pick(k==='mm'?MK_LINES.mm:k==='store'?MK_LINES.store:MK_LINES.look).replace('{who}',who));}
+      else scSay(q,pick(['q','star','dots']));
+    });
+  };
+  go();return p;
+}
+
+/* ---------- 網路商店：館長的工作室 ---------- */
+function shopSceneKey(){const o=SC.shop;return [o.W,S.upg.slots||0].join('|');}
+function shopBuild(o){
+  const W=o.W,H=o.H,b=o.bg.getContext('2d'),f=o.fg.getContext('2d');b.clearRect(0,0,W,H);f.clearRect(0,0,W,H);o.outdoor=false;
+  // 牆、窗、地板
+  hR(b,'#E4DACA',0,0,W,78);hR(b,'#D6CBB8',0,0,W,3);hR(b,'#B9A88E',0,74,W,4);hR(b,'#CDBFA8',0,74,W,1);
+  const wx=12;hR(b,'#8A6A4A',wx-2,14,40,36);hR(b,'#BFE0F2',wx,16,36,32);hR(b,'#E6F4FA',wx+3,18,8,1);hR(b,'#8A6A4A',wx+17,16,2,32);hR(b,'#8A6A4A',wx,31,36,2);hR(b,'#A88A62',wx-4,49,44,3);
+  b.fillStyle='rgba(255,250,220,.10)';b.fillRect(wx-2,50,40,24);
+  // 窗台上的盆栽
+  hR(b,'#A65E3A',wx+28,43,7,6);hR(b,'#5E8A3A',wx+27,37,4,4);hR(b,'#7FA862',wx+31,36,4,5);hR(b,'#46702C',wx+30,40,2,3);
+  hR(b,'#A88A62',0,78,W,H-78);for(let y=84;y<H;y+=7)hR(b,'#987A54',0,y,W,1);for(let y=78,k=0;y<H;y+=7,k++)for(let x=(k%2)*20;x<W;x+=40)hR(b,'#987A54',x,y,1,7);
+  // 先算好家具的位置
+  const tx=56,dx=W-30,sw=62,sx=Math.min(dx-sw-12,Math.round(W*.6)),px=Math.round((tx+46+sx)/2)-15,roomy=sx-(tx+46)>=76;
+  // 牆上的地質圖（打包桌上方）
+  const mx=px-2;hR(b,'#6A4A2E',mx,14,34,26);hR(b,'#F2EEE2',mx+2,16,30,22);
+  [['#E8C547',0,0,30,6],['#7FB86A',0,6,12,8],['#D96C8E',12,5,10,7],['#4F86C6',22,4,8,9],['#A3542E',0,14,18,8],['#8E6BB0',18,13,12,9]].forEach(([c,x,y,w,h])=>hR(b,c,mx+2+x,16+y,w,h));
+  hR(b,'#2B2420',mx+9,22,12,1);hR(b,'#2B2420',mx+20,26,1,8);
+  // 書桌上方的吊燈
+  hR(b,'#3A3430',tx+20,0,1,10);hR(b,'#2F4A3E',tx+16,10,9,4);hR(b,'#FFF2C8',tx+18,14,5,1);b.fillStyle='rgba(255,236,190,.10)';b.fillRect(tx+6,15,30,56);
+  // 月曆
+  const cx=wx+42;hR(b,'#F4F1EA',cx,30,12,14);hR(b,'#C2453A',cx,30,12,3);for(let k=0;k<3;k++)for(let q=0;q<4;q++)hR(b,'#B9B2A6',cx+1+q*3,35+k*3,2,1);
+  // 門（右邊）
+  hR(b,'#7A5A3A',dx,26,22,52);hR(b,'#8C6A48',dx+2,28,18,50);hR(b,'#E6C46A',dx+16,52,2,2);hR(b,'#7A5A3A',dx+5,32,12,1);
+  // 上架中的層架
+  hR(b,'#D6CBB8',sx+2,22,sw-4,56);hR(b,'#6A4A2E',sx,20,sw,2);hR(b,'#6A4A2E',sx,20,2,58);hR(b,'#6A4A2E',sx+sw-2,20,2,58);
+  for(const y of[39,57,75]){hR(b,'#7A5A3A',sx,y,sw,2);hR(b,'#9C7652',sx+2,y,sw-4,1);}
+  mkText(b,'上架中','#6A4A2E',null,sx+sw/2-17,7,12);
+  // 書桌和電腦（螢幕在左、館長站右邊）
+  hR(f,'#7A5A3A',tx,70,46,3);hR(f,'#6A4A2E',tx,73,46,1);hR(f,'#6A4A2E',tx+2,74,2,12);hR(f,'#6A4A2E',tx+42,74,2,12);
+  hR(f,'#2B2420',tx+3,56,22,14);hR(f,'#3A3A44',tx+4,57,20,12);hR(f,'#2B2420',tx+12,70,4,1);hR(f,'#2B2420',tx+10,69,8,1);
+  hR(f,'#D8D4CC',tx+26,67,10,3);hR(f,'#F4F1EA',tx+38,66,5,4);hR(f,'#7A5A3A',tx+39,65,3,1);
+  // 打包桌：紙箱、膠帶台、氣泡紙；旁邊堆著空箱子
+  hR(f,'#8C6A48',px,76,30,3);hR(f,'#6A4A2E',px+1,79,2,10);hR(f,'#6A4A2E',px+27,79,2,10);
+  hR(f,'#C9A46A',px+3,71,9,5);hR(f,'#A88450',px+3,75,9,1);hR(f,'#E6D6B0',px+7,71,1,5);hR(f,'#B7B7B7',px+18,73,6,3);hR(f,'#6E6E6E',px+20,74,2,1);
+  if(roomy){hR(b,'#CFE6F2',px-10,66,7,12);hR(b,'#E6F4FA',px-9,67,2,10);hR(b,'#A8C8D8',px-4,66,1,12);
+  hR(b,'#C9A46A',px+33,66,12,12);hR(b,'#A88450',px+33,77,12,1);hR(b,'#C9A46A',px+35,58,9,8);hR(b,'#A88450',px+35,65,9,1);hR(b,'#E6D6B0',px+39,58,1,8);}
+  o.lay={tx,px,sx,sw,dx,parcels:o.lay&&o.lay.parcels||0,flash:0};
+  o.draw2=shopDraw2;
+  const hx=tx+32;o.homeX=hx;
+  if(!o.ppl.some(p=>p.P.me)){const me=scPerson(o,'adult',{P:pplMakeMe(),x:hx,y:76,st:'idle',dir:0,tx:hx,behind:true,staff:true,keep:true,speed:26});o.me=me;}
+  else{const me=o.ppl.find(p=>p.P.me);o.me=me;if(me.job==null){me.x=me.tx=hx;me.y=76;me.behind=true;}}
+  scCap(o,shopCapLine(),true);
+}
+function shopDraw2(o,g){
+  const L=o.lay;if(!L)return;
+  // 架上的標本：照上架的東西畫
+  const n=Math.min(S.shop.length,9);for(let k=0;k<n;k++){const it=S.shop[k].it,d=SPEC[it.id];g.drawImage(spriteCanvas(d.g,d.fg,d.hi),L.sx+4+(k%3)*19,23+Math.floor(k/3)*18);}
+  // 螢幕：平常是網頁、有訂單就閃
+  const sx=L.tx+4,sy=57;if(L.flash>0&&Math.floor(L.flash*4)%2===0){hR(g,'#F4F1EA',sx,sy,20,12);hR(g,'#E0505A',sx+8,sy+2,4,6);hR(g,'#E0505A',sx+8,sy+9,4,2);}
+  else{hR(g,'#DDE6EE',sx,sy,20,12);hR(g,'#4F86C6',sx,sy,20,2);for(let k=0;k<3;k++){hR(g,'#B9C6D2',sx+2+k*6,sy+4,4,4);hR(g,'#9AA8B4',sx+2+k*6,sy+9,4,1);}}
+  // 門口待寄的包裹
+  for(let k=0;k<Math.min(L.parcels,5);k++){const x=L.dx-12+(k%2)*7,y=104-Math.floor(k/2)*5;hR(g,'#C9A46A',x,y-5,7,5);hR(g,'#A88450',x,y-1,7,1);hR(g,'#E6D6B0',x+3,y-5,1,5);}
+}
+function shopCapLine(){
+  const n=S.shop.length;
+  if(!n)return '網路商店還沒有上架的東西。館長坐在電腦前，想著要先賣哪一件。';
+  return pick([`架上有 ${n} 件等著出貨。館長一邊回買家的訊息，一邊整理照片。`,`商店頁面上有 ${n} 件標本，館長在看今天有幾個人來逛。`,'館長把要寄的紙箱、氣泡紙和膠帶準備好放在打包桌上。']);
+}
+function shopUpdate(o,dt){
+  const L=o.lay;if(!L)return;
+  o.ppl.forEach(p=>scStep(o,p,dt));o.ppl=o.ppl.filter(p=>!(p.leave&&(p.x>o.W+14||p.x<-14)));
+  if(L.flash>0)L.flash-=dt;
+  const me=o.me;
+  // 有訂單：拿貨、打包、放到門口
+  if(me&&me.job==null&&o.orders&&o.orders.length){
+    const name=o.orders.shift();me.job=1;L.flash=2.5;scSay(me,'bang');
+    scCap(o,`叮！有人買了「${name}」。館長從架上拿下來，準備打包。`,true);
+    setTimeout(()=>{me.behind=false;me.y=80;scGo(me,L.sx+L.sw/2,84,q=>{scWait(q,1.4,()=>{q.carry=true;scGo(q,L.px+15,88,q2=>{q2.carry=false;scWait(q2,2.4,()=>{q2.carry=true;scGo(q2,L.dx-8,98,q3=>{q3.carry=false;L.parcels++;scGo(q3,o.homeX,80,q4=>{q4.y=76;q4.behind=true;q4.job=null;q4.dir=0;});});},true);scSay(q2,'dots');});},true);});},1200);
+  }
+  // 宅配：有包裹的話，過一陣子來收
+  o.courierT=(o.courierT??(6+rnd()*6))-dt;
+  if(L.parcels>0&&o.courierT<=0&&!o.ppl.some(p=>p.courier)){
+    o.courierT=14+rnd()*10;
+    const P=pplMake('adult');const c=scPerson(o,'adult',{P:shopCourierLook(),courier:true,x:o.W+10,y:100,speed:24});
+    scCap(o,'宅配司機來收件了，把門口的紙箱搬上車。');
+    scGo(c,L.dx-6,100,q=>{scSay(q,'note');scWait(q,1.2,()=>{q.carry=true;L.parcels=0;q.leave=true;scGo(q,o.W+14,100);});});
+  }
+  if(!me.bub&&me.job==null&&rnd()<dt*.05)scSay(me,pick(['dots','note']));
+}
+function shopCourierLook(){
+  const L=pplLook('adult');Object.assign(L,{hs:'cap',body:'tee',legs:'pants',acc:[]});Object.assign(L.pal,{t:'#2F6E5A',C:'#2F6E5A',K:'#1F4A3C',p:'#3B4458'});L.pal.T=shade(L.pal.t,-.15);
+  const head=PPL_HEAD.cap,body=PPL_BODY.tee,legs=PPL_LEGS.pants,fr={};
+  for(const d of[-1,0,1]){const hd=pplEyes(head,d,false),er=hd.findIndex(r=>r.includes('E')),ec=[];[...hd[er]].forEach((ch,i)=>{if(ch==='E')ec.push(i+1);});fr[d]=legs.map(lg=>pplSprite([...hd,...body,...lg],L.pal,null));}
+  const back=pplSprite([...pplBack(head,false),...pplBackBody(body,'t'),...legs[1]],L.pal,null);
+  return Object.assign(L,{fr,back,w:fr[0][1].width,h:fr[0][1].height});
+}
+function shopOrder(name){const o=SC.shop||scMake('shop');if(!o)return;(o.orders=o.orders||[]).push(name);}
+
 /* ================= 野外工具：地質鎚和鑿子 ================= */
 // 地質鎚：一下 1 體力；有化石紋路的岩塊，三成機會敲得太用力，裡面的標本品相 -12。
 // 鑿子：一下 2 體力；敲下來的岩塊一定完整，標本品相 +8。
@@ -4681,7 +5081,7 @@ const copyFail=t=>{try{t.focus();t.select();t.setSelectionRange(0,t.value.length
 
 /* ================= 回報問題 ================= */
 // REPORT_URL：Google Apps Script 網頁應用程式的網址（https://script.google.com/macros/s/…/exec）。空白時只提供複製內容。
-const BUILD='V73',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
+const BUILD='V74',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
 let bugLast=0;
 function openBug(){E.bugStatus.textContent='';E.bugSend.disabled=false;openModal(E.bugModal);setTimeout(()=>{try{E.bugMsg.focus();}catch(_){}},60);}
 const bugWhere=()=>S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title;
