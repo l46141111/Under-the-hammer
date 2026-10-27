@@ -886,7 +886,7 @@ h1{font-size:24px;letter-spacing:.08em}
 
 <div class="pauseov" id="pauseov" hidden role="dialog" aria-modal="true" aria-labelledby="pauseH">
   <div class="pausebox"><h2 id="pauseH">暫停中</h2><p class="pinfo" id="pauseInfo"></p>
-    <p class="fine">時間停在這一刻。野外、工坊、博物館和網路商店，都會等你回來。</p>
+    <p class="fine">時間停在這一刻。野外、工坊和博物館，都會等你回來。</p>
     <div class="pacts"><button class="btn primary" id="pauseGo" type="button">繼續</button><button class="btn" id="pauseSave" type="button">存檔</button><button class="btn" id="pauseBug" type="button">回報問題</button></div></div>
 </div>
 <div class="pauseov" id="lockov" hidden role="dialog" aria-modal="true" aria-labelledby="lockH">
@@ -1192,7 +1192,7 @@ const LINES={
   dig:'岩層是一層一層往下挖的。想挖到深處的好東西，得先從地表開出一條路。',
   tech:'修復技師上工了。普通和少見的化石，他會自己從工作台上拿去清修；稀有的會等你交代。',
   eshop:'東西上架了。網路上的買家來自各地，什麼時候賣出去要看運氣，也看你開的價錢。',
-  restClose:'你收工回家睡了一覺，隔天一早體力恢復了。不過今天剩下的時間也跟著跳過：博物館提早閉館，還沒進場的訪客不會來，網路商店今天也不會再有人下單。如果不收工，博物館會一直開到傍晚六點，然後自然進入隔天。',
+  restClose:'你收工回家睡了一覺，隔天一早體力恢復了。不過今天剩下的時間也跟著跳過：博物館提早閉館，還沒進場的訪客不會來{shop}。如果不收工，博物館會一直開到傍晚六點，然後自然進入隔天。',
   fever:'你敲到一段特別豐富的地層！接下來 8 鎚，敲下來的岩塊都能完整帶走，裡面有化石或礦物的機會大約是平常的 2.5 倍。',
   cueHint:'裂縫透出的光色越暖，裡面越可能有好東西。紅光和彩虹光最值得期待，但也不是每次都中。',
   sth:'Sharktooth Hill 的骨層大約在 1500 萬年前形成，花了約 70 萬年慢慢堆積，平均每平方公尺有 200 件化石。這裡是私人採石場，付費就能來挖。',
@@ -1487,6 +1487,7 @@ function normalize(){
   else if(!S.site||!SITES[S.site]||SITES[S.site].region!==S.region){S.region='tw';S.site='dahan';}
   if(S.site&&(!S.outcrop||S.outcrop.site!==S.site)) S.outcrop=newOutcrop(S.site);
   if(!S.site) S.outcrop=null;
+  if(!(S.unl&&S.unl.shop)&&Array.isArray(S.shop)&&S.shop.length)S.shop=S.shop.filter(l=>!placeItem(l.it,null));
 }
 function okItem(it){if(!it||typeof it!=='object')return false;if(it.t==='rock')return !!ROCK[it.rk];return it.t==='spec'&&!!SPEC[it.id]&&['raw','busy','ok','frag'].includes(it.st);}
 function sanitize(){
@@ -1807,8 +1808,8 @@ function renderInfo(){
   }
   if(it.st==='ok'){(S.comm||[]).filter(c=>c.kind==='deliver'&&commMatch(c,it)).forEach(c=>acts.unshift(`<button class="btn primary" type="button" data-act="comm" data-c="${c.id}">交給${NPC[c.who].name}（委託）</button>`));
     if(isUnk(it)){acts.unshift('<button class="btn primary" type="button" data-act="novsend">寄給大學的研究室</button>');hint='這件跟圖鑑上的標本都對不起來。寄給大學的研究室，也許會是新種。寄出去之後，要等研究結果出來才會回來。';}}
-  if(it.st!=='busy'&&!d.res&&d.val>0)acts.push(`<button class="btn" type="button" data-act="listopen"${S.shop.length>=shopCap()?' disabled':''}>上架網路商店${S.shop.length>=shopCap()?' <small>已滿</small>':''}</button>`);
-  if(listMode===sel&&it.st!=='busy'){acts.length=0;const b=shopBase(it);
+  if(unl('shop')&&it.st!=='busy'&&!d.res&&d.val>0)acts.push(`<button class="btn" type="button" data-act="listopen"${S.shop.length>=shopCap()?' disabled':''}>上架網路商店${S.shop.length>=shopCap()?' <small>已滿</small>':''}</button>`);
+  if(listMode===sel&&unl('shop')&&it.st!=='busy'){acts.length=0;const b=shopBase(it);
     TIERS.forEach((t,k)=>acts.push(`<button class="btn${k===1?' primary':''}" type="button" data-act="list" data-tier="${k}">${t.name} ${nt(shopPrice(b,t))} <small>每天約 ${Math.round(saleP(k)*100)}% 會賣出</small></button>`));
     acts.push('<button class="btn" type="button" data-act="listcancel">取消</button>');
     hint=`網路商店會抽 ${feeTxt()} 手續費。${it.cert==='real'?'有鑑定證明，價格比較好。':it.cert===null?'沒有鑑定過，價格會打折；如果賣出去的是假貨，買家可能會退貨。':''}`;}
@@ -2940,6 +2941,7 @@ function shopBase(it){return valOf(it)*(it.cert==='real'?1.2:it.cert==='self'?1:
 const shopPrice=(b,t)=>Math.max(50,Math.round(b*t.mul/10)*10);
 function rollSale(l,frac,elapsed){const p=1-Math.pow(1-saleP(l.tier),frac);l.at=rnd()<p?elapsed+rnd()*(DAY-elapsed):null;}
 function listItem(i,k){
+  if(!unl('shop'))return;
   const it=S.grid[i];if(!it||it.t!=='spec'||it.st==='busy')return;if(S.shop.length>=shopCap()){toast('網路商店的位置滿了。');return;}
   const t=TIERS[k],price=shopPrice(shopBase(it),t),el=clamp(now()-S.dayStart,0,DAY);
   const l={it,price,tier:k,day:S.day};rollSale(l,1-el/DAY,el);S.shop.push(l);
@@ -3130,7 +3132,7 @@ function rest(){
   S.openFrac=el/DAY;S.dayStart-=left;
   S.grid.forEach(it=>{if(it&&it.st==='busy'&&it.job)it.job.until-=left;});S.bigs.forEach(b=>{if(b.st==='busy'&&!b.paused)b.until-=left;});
   advanceTime(t);jobs(t);
-  narrateOnce('restClose',LINES.restClose);sfx.take();
+  narrateOnce('restClose',LINES.restClose.replace('{shop}',unl('shop')?'，網路商店今天也不會再有人下單':''));sfx.take();
   renderField();renderOcBtn();hud(now());save();
 }
 function jobs(t){
@@ -3340,7 +3342,7 @@ function bind(){
     const b=e.target.closest('[data-act]');if(!b||b.disabled||sel==null)return;const a=b.dataset.act;
     if(a==='close'){sel=null;listMode=null;renderGrid(true);renderInfo();return;}
     if(a==='glue'){const j=+b.dataset.j;if(canMerge(S.grid[sel],S.grid[j])){mergeFrag(sel,j);renderGrid();renderInfo();save();}return;}
-    if(a==='listopen'){listMode=sel;renderInfo();return;}
+    if(a==='listopen'){if(!unl('shop'))return;listMode=sel;renderInfo();return;}
     if(a==='listcancel'){listMode=null;renderInfo();return;}
     if(a==='list'){listItem(sel,+b.dataset.tier);return;}
     if(a==='comm'){commDeliver(b.dataset.c);return;}
@@ -5081,7 +5083,7 @@ const copyFail=t=>{try{t.focus();t.select();t.setSelectionRange(0,t.value.length
 
 /* ================= 回報問題 ================= */
 // REPORT_URL：Google Apps Script 網頁應用程式的網址（https://script.google.com/macros/s/…/exec）。空白時只提供複製內容。
-const BUILD='V74',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
+const BUILD='V75',REPORT_URL='https://script.google.com/macros/s/AKfycbxFVOMiA3bLtkb5SNUE9DlogNs9cd1ZMoxg1axkRSrF2WLpyMoYxS25zt4m3Y3xvPTC/exec';
 let bugLast=0;
 function openBug(){E.bugStatus.textContent='';E.bugSend.disabled=false;openModal(E.bugModal);setTimeout(()=>{try{E.bugMsg.focus();}catch(_){}},60);}
 const bugWhere=()=>S.site?SITES[S.site].short:((REG[S.region]||{}).mk||REG.mm.mk).title;
