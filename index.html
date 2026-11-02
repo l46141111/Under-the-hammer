@@ -2097,7 +2097,7 @@ function stageLoop(){
   if(A.sprite)drawRays(x);
   const lX=Math.round((A.rx+A.offL.x)*2)/2,lY=Math.round((A.ry+A.offL.y)*2)/2,rX=Math.round((A.rx+A.offR.x)*2)/2,rY=Math.round((A.ry+A.offR.y)*2)/2;
   x.drawImage(A.rock.L,lX,lY);x.drawImage(A.rock.R,rX,rY);
-  if(A.opened&&A.rock.Lf){x.drawImage(A.rock.Lf,lX,lY);x.drawImage(A.rock.Rf,rX,rY);}
+  if(A.opened&&A.rock.Lf){x.drawImage(A.rock.Lf,lX,lY);x.drawImage(A.rock.Rf,rX,rY);drawNetOpen(x,lX,lY,rX,rY);}
   if(A.crackN>0&&!A.opened)drawCrackGlow(x);
   if(A.pre)A.pre(x);
   if(A.sprite){const b=0;x.drawImage(A.sprite.c,32,Math.round(A.sprite.y)+b,32,32);drawSparkles(x);}
@@ -2137,10 +2137,11 @@ async function playSplit(r){
   noise(.4,.22,1700);
   const n0=A.crackN;await tween(Math.max(320,crackPts.length*24),t=>{A.crackN=Math.round(n0+(crackPts.length-n0)*t);});
   if(hot&&!ovFast)tone(66,1.7,'sine',.09);
-  await tween(hot?1700:700,t=>{A.glow=Math.min(1,t*1.5);});
+  await tween(hot?1700:700,t=>{A.glow=Math.min(1,t*1.5);const g=Math.min(1,t*1.25);if(A.rock.bed)A.offR.y=-.75*g;else{A.offL.x=-.5*g;A.offR.x=.5*g;}
+    if(Math.random()<.14&&A.crackPts.length){const p=A.crackPts[Math.random()*A.crackPts.length|0];A.parts.push({x:p[0],y:p[1],vx:(Math.random()-.5)*.5,vy:0,g:.1,c:shade(ROCK[A.rk].color,(Math.random()-.5)*.4),life:45,big:Math.random()<.25});}});
   A.opened=true;A.flash=8;sfx.brk();
-  if(A.rock.bed)await tween(760,t=>{A.offL.x=-10*t;A.offL.y=0;A.offR.x=38*t;A.offR.y=-9*Math.sin(Math.PI*Math.min(1,t*1.3))+A.rock.drop*Math.pow(Math.max(0,(t-.55)/.45),2);},easeOut);
-  else await tween(460,t=>{A.offL.x=-25*t;A.offR.x=25*t;A.offL.y=A.offR.y=-3*Math.sin(Math.PI*t);},easeOut);
+  if(A.rock.bed)await tween(760,t=>{A.offL.x=-10*t;A.offL.y=0;A.offR.x=38*t;A.offR.y=-.75*(1-t)-9*Math.sin(Math.PI*Math.min(1,t*1.3))+A.rock.drop*Math.pow(Math.max(0,(t-.55)/.45),2);},easeOut);
+  else await tween(460,t=>{A.offL.x=-.5-24.5*t;A.offR.x=.5+24.5*t;A.offL.y=A.offR.y=-3*Math.sin(Math.PI*t);},easeOut);
   if(r.hid){
     const d=SPEC[r.hid],sc=r.tier>=4?['#FFD23D','#4FA3FF','#FF4A3D','#3BD47A']:r.tier>=3?['#FFC24A','#FF6A4A']:r.tier>=2?['#BFF5D4']:['#FFFFFF'];
     A.sprite={c:specArt(d.g,d.fg,d.hi),y:GROUND-24,settled:false};
@@ -7099,11 +7100,6 @@ function buildRock(rk){
     while(fx>=0){const iy=Math.round(fy);if(!m2(fx,iy)&&fx<W2*.5)break;main.push([fx,iy]);cut[fx]=iy;
       if(rng()<.12){const ny=iy+(rng()<.5?-1:1);if(ny>H2*.25&&ny<H2*.75){main.push([fx,ny]);fy=ny;}}fx--;}}
   const cutAt=k=>{if(cut[k]!=null)return cut[k];let a=k,b2=k;while(a>=0&&cut[a]==null)a--;while(b2<(bed?W2:H2)&&cut[b2]==null)b2++;return cut[a]!=null?cut[a]:cut[b2]!=null?cut[b2]:(bed?H2/2:W2/2);};
-  const branches=[],nb=bed?2:2+(rng()*3|0);
-  for(let k=0;k<nb&&main.length>12;k++){const at=Math.floor(main.length*(.15+rng()*.7)),[sx0,sy0]=main[at],side=rng()<.5?-1:1;
-    let a=bed?side*(.18+rng()*.15):(side>0?.7:-.7)+(rng()-.5)*.5,bx=sx0,by=sy0;const pts2=[],len=bed?5+(rng()*8|0):6+(rng()*12|0);
-    for(let s=0;s<len;s++){if(bed){by+=Math.sin(a);bx-=1;a+=(rng()-.5)*.15;}else{bx+=Math.sin(a);by+=Math.cos(a)*.9;a+=(rng()-.5)*.35;}const X=Math.round(bx),Y=Math.round(by);if(!m2(X,Y))break;pts2.push([X/2,Y/2]);}
-    if(pts2.length>2)branches.push({at,pts:pts2});}
   // 表面：依岩石種類上紋理；外圈是風化的表皮（稍暗偏褐），剖開的那一面是新鮮的顏色
   const base=R.color,tx=genTex(R.pat,base),hh=(i,j)=>hHash(i*31+j*7,j*13+i*3),ph=rng()*6.28;
   // 平滑的雜訊（雙線性內插），用在土塊、結核、礫石的明暗
@@ -7152,8 +7148,24 @@ function buildRock(rk){
   }
   // 給 playSplit 的裂縫點（格子單位，可以是半格）：主裂縫從敲的地方開始
   const crack=main.map(([a,b2])=>[a/2,b2/2]);
+  // 樹枝狀的裂縫網：主裂縫（樹幹）粗、往下慢慢變細；沿路長出好幾條分枝，分枝再分岔；敲到的地方有一圈放射狀的短裂縫
+  // b 是「從敲的地方沿著裂縫走多遠」，動畫時照這個距離一點一點長出來
+  const net=new Map(),stamp=(x,y,w,b2,tr)=>{const r=w/2,R0=Math.ceil(r);for(let dy=-R0;dy<=R0;dy++)for(let dx=-R0;dx<=R0;dx++){if(dx*dx+dy*dy>r*r+.35)continue;const X=Math.round(x+dx),Y=Math.round(y+dy);if(!m2(X,Y))continue;const k=Y*W2+X,o=net.get(k);if(!o||o.b>b2)net.set(k,{X,Y,b:b2,tr:tr||!!(o&&o.tr)});else if(tr)o.tr=true;}};
+  main.forEach(([x,y],k)=>{const f=k/Math.max(1,main.length-1);stamp(x,y,f<.2?3.2:f<.65?2.6:2,k,true);});
+  const step=(a)=>bed?[-Math.cos(a),Math.sin(a)]:[Math.sin(a),Math.cos(a)];
+  const grow=(x,y,a,len,w,b2,depth)=>{const pts=[];for(let s2=0;s2<len;s2++){const[dx,dy]=step(a);x+=dx;y+=dy;a+=(rng()-.5)*.32;if(!m2(Math.round(x),Math.round(y)))break;stamp(x,y,Math.max(1,w*(1-s2/len*.55)),b2+s2,false);pts.push([x,y,b2+s2,a]);}
+    if(depth<2&&pts.length>6){const nc=depth?1:1+(rng()<.6?1:0);for(let c=0;c<nc;c++){const p=pts[Math.floor(pts.length*(.25+rng()*.5))],side=rng()<.5?-1:1;grow(p[0],p[1],p[3]+side*(.45+rng()*.5),len*(.5+rng()*.15),Math.max(1,w-.6),p[2],depth+1);}}};
+  let sd=rng()<.5?1:-1;
+  for(let k=5;k<main.length-5;k+=6+Math.floor(rng()*6)){if(rng()<.85){const[x,y]=main[k],[nx,ny]=main[Math.min(main.length-1,k+4)],ta=bed?Math.atan2(ny-y,-(nx-x)):Math.atan2(nx-x,ny-y);
+    grow(x,y,ta+sd*(.5+rng()*.45),(bed?10:12)+rng()*(bed?12:16),2.2,k,0);sd=-sd;}}
+  if(main.length){const[ix,iy]=main[0],star=bed?[-1.15,-.6,.6,1.15]:[-1.45,-.85,.85,1.45,-2.3,2.3];star.forEach(a=>{let x=ix,y=iy;const L2=3+rng()*4;for(let s2=0;s2<L2;s2++){const[dx,dy]=step(a+(rng()-.5)*.3);x+=dx;y+=dy;if(!m2(Math.round(x),Math.round(y)))break;stamp(x,y,s2<2?1.8:1.2,s2*.6,false);}});}
+  // 每一點的顏色：裂縫本身很暗；左上那一邊的壁在陰影裡（暗），右下那一邊的壁朝著光（亮）；分開以後屬於哪一半
+  const netL=[];let maxB=1;
+  net.forEach(o=>{maxB=Math.max(maxB,o.b);const side=isL(o.X,o.Y)?0:1;netL.push({x:o.X,y:o.Y,b:o.b,t:0,tr:o.tr,s:side,c:o.tr?'#120C08':'#1E1610'});
+    [[-1,0,2],[0,-1,2],[1,0,1],[0,1,1]].forEach(([dx,dy,t])=>{const X=o.X+dx,Y=o.Y+dy;if(net.has(Y*W2+X)||!m2(X,Y))return;netL.push({x:X,y:Y,b:o.b+.5,t,tr:o.tr,s:isL(X,Y)?0:1,c:shade(texAt(X,Y),t===1?.34:-.38)});});});
+  netL.sort((a,b2)=>a.b-b2.b);
   let drop=0;if(bed){let lo=0;for(let j=H2-1;j>=0;j--)if(m2(W2-6,j)){lo=j;break;}drop=Math.max(2,(lo-cutAt(W2-6))/2);}
-  return{L:arCv(L),R:arCv(Rr),Lf:arCv(Lf),Rf:arCv(Rf),crack,branches,bed,drop,W:W+2,H:H+2};
+  return{L:arCv(L),R:arCv(Rr),Lf:arCv(Lf),Rf:arCv(Rf),crack,net:netL,maxB,bed,drop,W:W+2,H:H+2};
 }
 // 工作台：桌面、木紋、接縫、前緣的陰影
 function drawBench(x){
@@ -7177,18 +7189,19 @@ function drawHammer(x,th){
     dx=px-hx0;dy=py-hy0;const t=dx*ux+dy*uy,w=dx*vx+dy*vy;
     if(t>=-3&&t<=A.hL-1.2&&w>=-.6&&w<=.75){let c;if(t<5)c=w<-.2?'#6A5A4A':(Math.floor((t+3)*1.4)%2?'#4A3C30':'#33291F');else c=w<-.15?'#C8925A':w<.35?'#9A6A38':'#6B4423';x.fillStyle=c;x.fillRect(X,Y,.5,.5);}}
 }
-// 裂縫：主裂縫半格寬，從敲的地方一點一點長出去；支裂縫跟著長；敲到的地方有壓碎的白點；發光時往兩邊暈開
+// 裂縫：照「離敲擊點多遠」一點一點長出去，像樹枝一樣分岔；裂縫兩側一邊暗一邊亮，看起來有深度
+// 開始發光時主裂縫（樹幹）發出提示色；快裂開時兩半會先撐開一點點縫
 function drawCrackGlow(x){
-  const pul=.5+.5*Math.sin(A.f/11),rb=A.cue==='rainbow',col=k=>rb?`hsl(${(k*14+A.f*6)%360},100%,62%)`:CUE_HEX[A.cue||'gray'],n=A.crackPts.length;
-  const ink=k=>A.cue?(A.glow>0&&pul>.7&&!rb?'#FFFFFF':col(k)):'#1A120B';
-  if(A.glow>0){for(let k=0;k<A.crackN;k+=1){const[i,j]=A.crackPts[k];x.globalAlpha=(.22+.3*A.glow*pul);const c=col(k);
-      if(A.rock.bed){pxH(x,i,j-.5,c);pxH(x,i,j+.5,c);}else{pxH(x,i-.5,j,c);pxH(x,i+.5,j,c);}
-      if(k%9===0){const len=.5+A.glow*(1+1.5*pul);for(let q=1;q<=len;q+=.5){x.globalAlpha=Math.max(0,(.32-q*.08)*A.glow);if(A.rock.bed){pxH(x,i,j-q-.5,c);pxH(x,i,j+q+.5,c);}else{pxH(x,i-q-.5,j,c);pxH(x,i+q+.5,j,c);}}}}x.globalAlpha=1;}
-  for(let k=0;k<A.crackN;k++){const[i,j]=A.crackPts[k];pxH(x,i,j,ink(k));}
-  const ox=A.rx+1,oy=A.ry+1;
-  (A.rock.branches||[]).forEach(b=>{const prog=Math.max(0,Math.min(1,(A.crackN-b.at)/(n*.25+1)));const m=Math.floor(b.pts.length*prog);for(let k=0;k<m;k++){const[i,j]=b.pts[k];x.globalAlpha=k>b.pts.length-3?.55:1;pxH(x,ox+i,oy+j,ink(b.at+k));}x.globalAlpha=1;});
-  if(A.crackN>0&&n){const[i,j]=A.crackPts[0];[[-.5,0],[.5,0],[0,-.5],[-1,.5],[1,.5],[-.5,1],[.5,-1]].forEach(([a,b2],k)=>{x.globalAlpha=.7-k*.06;pxH(x,i+a,j+b2,'#EDE6D8');});x.globalAlpha=1;}
+  const net=A.rock.net;if(!net)return;const n=A.crackPts.length||1,thr=A.rock.maxB*Math.min(1,A.crackN/n)+.01;
+  const pul=.5+.5*Math.sin(A.f/11),rb=A.cue==='rainbow',cue=A.cue?(rb?null:CUE_HEX[A.cue]):null;
+  const r2=v=>Math.round(v*2)/2,ox=[r2(A.rx+A.offL.x)+1,r2(A.rx+A.offR.x)+1],oy=[r2(A.ry+A.offL.y)+1,r2(A.ry+A.offR.y)+1];
+  for(const q of net){if(q.b>thr)break;let c=q.c;
+    if(q.t===0&&A.cue&&q.tr)c=A.glow>0&&pul>.75&&!rb?'#FFFFFF':rb?`hsl(${(q.b*5+A.f*6)%360},100%,62%)`:cue;
+    x.fillStyle=c;x.fillRect(ox[q.s]+q.x/2,oy[q.s]+q.y/2,.5,.5);}
+  if(A.glow>0&&A.cue){x.globalAlpha=(.16+.22*A.glow*pul);for(const q of net){if(q.b>thr)break;if(!q.tr||q.t)continue;x.fillStyle=rb?`hsl(${(q.b*5+A.f*6)%360},100%,62%)`:cue;x.fillRect(ox[q.s]+q.x/2-.5,oy[q.s]+q.y/2-.5,1.5,1.5);}x.globalAlpha=1;}
 }
+// 分開以後：兩半上面還留著分枝的裂縫（主裂縫已經變成斷面了）
+function drawNetOpen(x,lX,lY,rX,rY){const net=A.rock.net;if(!net)return;const ox=[lX+1,rX+1],oy=[lY+1,rY+1];for(const q of net){if(q.tr)continue;x.fillStyle=q.c;x.fillRect(ox[q.s]+q.x/2,oy[q.s]+q.y/2,.5,.5);}}
 function drawSpark(x){const s=A.spark;if(!s||s.f<=0)return;const r=Math.ceil(s.f/2);for(let q=0;q<=r;q+=.5){const c=q<1.5?'#FFFFFF':'#FFD45A';pxH(x,s.x+q,s.y,c);pxH(x,s.x-q,s.y,c);pxH(x,s.x,s.y-q,c);pxH(x,s.x,s.y+q,c);}
   for(let q=.5;q<=r*.7;q+=.5){pxH(x,s.x+q,s.y-q,'#FFD45A');pxH(x,s.x-q,s.y-q,'#FFD45A');}s.f--;}
 function drawRays(x){
