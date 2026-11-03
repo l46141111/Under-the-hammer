@@ -7204,12 +7204,29 @@ function drawPieces(x){
   if(A.opened)drawNetOpen(x);
 }
 // 裂縫：照「離敲擊點多遠」一點一點長出去；提示色出現時，所有的裂縫一起發光
+// 發光的做法：
+// 1. 光暈：把發光的裂縫點畫到兩張很小的畫布（1/4、1/8 大小），平滑放大後蓋回岩石上，就是一圈往外漸淡的光；
+//    用「染色」的方式蓋（不是加亮），同一格只畫一次，淺色的岩石、裂縫交叉的地方都不會被洗白
+// 2. 裂縫本身是飽和的提示色；裂縫兩邊原本亮的那一排也被光染成提示色，暗的那一排只染一點，留一點深度
+// 3. 亮度跟著脈動，越接近裂開越亮；彩虹的話每一段顏色不一樣、會流動
+const crackBloom={};
+function bloomCv(k,w,h){let c=crackBloom[k];if(!c||c.width!==w||c.height!==h)c=crackBloom[k]=cvs(w,h);const g=c.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,w,h);return[c,g];}
 function drawCrackGlow(x){
   const net=A.rock.net;if(!net)return;const n=A.crackPts.length||1,thr=A.rock.maxB*Math.min(1,A.crackN/n)+.01,NP=A.rock.pieces?A.rock.pieces.length:2;
-  const pul=.5+.5*Math.sin(A.f/11),rb=A.cue==='rainbow',cue=A.cue&&!rb?CUE_HEX[A.cue]:null,pos=[...Array(NP)].map((_,k)=>pcPos(k));
-  const glowC=q=>rb?`hsl(${(q.b*5+A.f*6)%360},100%,62%)`:cue;
-  if(A.glow>0&&A.cue){x.globalAlpha=(.14+.2*A.glow*pul);for(const q of net){if(q.b>thr)break;if(q.t)continue;x.fillStyle=glowC(q);const[X,Y]=pos[q.s];x.fillRect(X+1+q.x/2-.5,Y+1+q.y/2-.5,1.5,1.5);}x.globalAlpha=1;}
-  for(const q of net){if(q.b>thr)break;let c=q.c;if(q.t===0&&A.cue)c=A.glow>0&&pul>.78&&!rb?'#FFFFFF':glowC(q);x.fillStyle=c;const[X,Y]=pos[q.s];x.fillRect(X+1+q.x/2,Y+1+q.y/2,.5,.5);}
+  // 灰色的提示是「一道細細的裂縫」：沒有光，裂縫就是暗的；藍、綠、紅、彩虹才發光
+  const lit=A.cue&&A.cue!=='gray',pul=.5+.5*Math.sin(A.f/11),rb=A.cue==='rainbow',cue=lit&&!rb?CUE_HEX[A.cue]:null,pos=[...Array(NP)].map((_,k)=>pcPos(k));
+  const glowC=q=>rb?`hsl(${(q.b*5+A.f*6)%360},95%,58%)`:cue,lv=(.35+.65*Math.max(A.glow,.3))*(.7+.3*pul);
+  if(lit){
+    const W=x.canvas.width,H=x.canvas.height,T=x.getTransform?x.getTransform():{a:AR,d:AR,e:0,f:0},L=[4,8].map(d=>[d,...bloomCv(d,Math.ceil(W/d),Math.ceil(H/d))]);
+    for(const q of net){if(q.b>thr)break;if(q.t)continue;const[X,Y]=pos[q.s],px=(X+1+q.x/2+.25)*T.a+T.e,py=(Y+1+q.y/2+.25)*T.d+T.f,c=glowC(q);
+      for(const[d,,g]of L){g.fillStyle=c;g.fillRect(Math.floor(px/d),Math.floor(py/d),1,1);}}
+    x.save();x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=true;if('imageSmoothingQuality'in x)x.imageSmoothingQuality='high';
+    [[8,.5],[4,.55]].forEach(([d,a])=>{const c=crackBloom[d];x.globalAlpha=a*lv;x.drawImage(c,0,0,c.width*d,c.height*d);});
+    x.restore();}
+  for(const q of net){if(q.b>thr)break;const[X,Y]=pos[q.s],px=X+1+q.x/2,py=Y+1+q.y/2;
+    if(q.t===0&&lit){x.fillStyle=glowC(q);x.fillRect(px,py,.5,.5);continue;}
+    x.fillStyle=q.c;x.fillRect(px,py,.5,.5);
+    if(lit){x.globalAlpha=(q.t===1?.6:.22)*Math.min(1,lv+.15);x.fillStyle=glowC(q);x.fillRect(px,py,.5,.5);x.globalAlpha=1;}}
 }
 // 碎開以後：碎塊上還留著的小裂縫（變成碎塊邊界的那些就不畫了）
 function drawNetOpen(x){const net=A.rock.net;if(!net||!A.rock.pieces)return;const pos=A.rock.pieces.map((_,k)=>pcPos(k));for(const q of net){if(q.tr)continue;x.fillStyle=q.c;const[X,Y]=pos[q.s];x.fillRect(X+1+q.x/2,Y+1+q.y/2,.5,.5);}}
