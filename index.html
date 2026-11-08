@@ -763,6 +763,43 @@ h1{font-size:24px;letter-spacing:.08em}
 /* 連結做成的按鈕（隱私權政策「查看」）：跟一般按鈕一樣，不要藍色底線 */
 a.btn{color:inherit;text-decoration:none}
 
+/* 手機直式（520px 以下）：把頂部和館長日誌壓小，讓野外岩壁、展廳、市集在第一個畫面就看得到 */
+@media (max-width:520px){
+  #app{gap:8px;padding-block:8px 40px}
+  #app .mast{flex-wrap:nowrap;gap:6px}
+  #app .brand{gap:7px;min-width:0;flex:1 1 auto}
+  #app .brand .logo{display:none}
+  #app .brand h1{font-size:14px;line-height:1.2;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #app .brand .sub{display:none}
+  #app .brand>div{min-width:0}
+  #app .mast-actions{gap:4px;flex-wrap:nowrap;flex:none}
+  #app .mast-actions .btn{padding:5px 7px;font-size:13px;gap:3px;min-height:32px}
+  /* 暫停、行事曆只留圖示（文字還在，讀螢幕軟體念得到） */
+  #app #pauseBtn,#app #calBtn{font-size:0;gap:0;padding:5px 8px}
+  #app #pauseBtn .hico,#app #calBtn .hico{width:16px;height:16px}
+  #app .bar{padding-block:4px 6px;gap:5px}
+  #app .stats{gap:4px}
+  #app .stats .stat{padding:2px 5px}
+  #app .stats .stat .k{font-size:10px;line-height:1.25}
+  #app .stats .stat .v{font-size:13.5px;line-height:1.25}
+  #app .stats .meter{height:7px;border-width:1px;margin-top:2px}
+  #app .tab{padding:4px 2px}
+  #app .log{padding:6px 10px 6px;box-shadow:2px 2px 0 var(--rule)}
+  #app .log-head{font-size:11px;letter-spacing:.08em}
+  #app .log-text{font-size:14.5px;line-height:1.5;margin:2px 0 4px;min-height:3em}
+  #app .quest{padding-top:4px;font-size:12.5px}
+  #app .panel .phead{margin-bottom:8px}
+  #app .panel .phead h2{font-size:18px}
+  /* 野外：天氣卡移到岩壁下面 */
+  #app #fieldBody{display:flex;flex-direction:column}
+  #app #fieldBody>#wxBar{order:3;margin-top:8px}
+  #app #fieldBody>#toolBar{order:2}
+  #app #fieldBody>.ofwrap{order:1}
+  #app #fieldBody>*:not(#wxBar):not(#toolBar):not(.ofwrap){order:4}
+
+}
+@media (max-width:350px){#app .brand h1{font-size:12px}#app .mast-actions .btn{padding:5px 5px}}
+
 /* 窄手機（380px 以下）：狀態列縮小內距和字；放在最後，才蓋得過前面的字級設定 */
 @media (max-width:380px){.stats{gap:5px}.stats .stat{padding:4px 5px}.stats .stat .k{font-size:10.5px;letter-spacing:0}.stats .stat .v{font-size:14px}.xs-hide{display:none}.log-head span:first-child{white-space:nowrap}}
 </style>

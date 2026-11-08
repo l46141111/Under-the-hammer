@@ -16,7 +16,7 @@ async def main():
         await pg.goto(URL);await pg.wait_for_timeout(900);await EV(SETUP);await pg.wait_for_timeout(400)
         async def shot(name,wait=600,el=None):
             await pg.wait_for_timeout(wait);await pg.evaluate('window.scrollTo(0,0)')
-            if el:await pg.evaluate(f"(()=>{{const e=document.querySelector('{el}');if(e){{const r=e.getBoundingClientRect();window.scrollTo(0,Math.max(0,r.top+scrollY-136));}}}})()")
+            if el:await pg.evaluate(f"(()=>{{const e=document.querySelector('{el}');if(e){{const r=e.getBoundingClientRect();window.scrollTo(0,Math.max(0,r.top+scrollY-114));}}}})()")
             await pg.evaluate("document.getElementById('toasts')&&(document.getElementById('toasts').innerHTML='')")
             await pg.wait_for_timeout(150);await pg.screenshot(path=f'{OUT}/{name}.png');print('shot',name,el)
         # 1 野外岩壁
