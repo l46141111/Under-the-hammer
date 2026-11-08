@@ -30,3 +30,29 @@ jobs:
           name: under-the-hammer-debug-apk
           path: app/android/app/build/outputs/apk/debug/*.apk
           retention-days: 30
+      - name: APK 資訊
+        working-directory: app/android
+        run: |
+          AAPT=$(ls $ANDROID_HOME/build-tools/*/aapt | sort -V | tail -1)
+          INFO=$($AAPT dump badging app/build/outputs/apk/debug/*.apk | grep -E "^package:|^targetSdkVersion|^sdkVersion|^application-label:" | tr '\n' ' ')
+          echo "::notice title=apk::$INFO"
+      - name: 開啟模擬器需要的 KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: 在模擬器上試跑
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          working-directory: .
+          script: bash app/ci-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test
+          path: smoke/
+          retention-days: 14
