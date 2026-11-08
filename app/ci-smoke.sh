@@ -17,10 +17,12 @@ adb shell am start -W -n $PKG/.MainActivity
 sleep 6
 adb exec-out screencap -p > smoke/2-back.png
 adb logcat -d > smoke/logcat.txt
-ERR=$(grep -E "Capacitor/Console.*(Uncaught|Error|TypeError|ReferenceError)|FATAL EXCEPTION|AndroidRuntime: " smoke/logcat.txt | head -5 | tr '\n' ' ' | cut -c1-600)
+# Capacitor 自己在頁面還沒建好時注入 safe-area 變數會失敗（舊版 WebView；Capacitor 會改用原生的邊距，不影響畫面），這行另外列出來、不算遊戲的錯誤
+CAPN=$(grep -c "Error injecting safe area CSS" smoke/logcat.txt)
+ERR=$(grep -E "Capacitor/Console.*(Uncaught|Error|TypeError|ReferenceError)|FATAL EXCEPTION|AndroidRuntime: " smoke/logcat.txt | grep -v "Error injecting safe area CSS" | head -5 | tr '\n' ' ' | cut -c1-600)
 LOGS=$(grep -c "Capacitor/Console" smoke/logcat.txt)
 WV=$(adb shell dumpsys webviewupdate | grep -m1 -o "Current WebView package.*" | tr -d '\r')
-echo "::notice title=smoke::pid-after-back=${PID:-none} console-lines=$LOGS webview=$WV"
+echo "::notice title=smoke::pid-after-back=${PID:-none} console-lines=$LOGS capacitor-safe-area-msgs=$CAPN webview=$WV"
 if [ -n "$ERR" ]; then echo "::error title=smoke-js::$ERR"; exit 1; fi
 if [ -z "${PID:-}" ]; then echo "::error title=smoke::按返回鍵之後 App 不見了"; exit 1; fi
 echo "::notice title=smoke::OK 開得起來、沒有 JS 錯誤、返回鍵正常"

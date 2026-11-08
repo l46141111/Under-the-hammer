@@ -25,7 +25,7 @@ jobs:
       - name: 編譯測試版 APK
         working-directory: app/android
         run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: under-the-hammer-debug-apk
           path: app/android/app/build/outputs/apk/debug/*.apk
@@ -50,7 +50,7 @@ jobs:
           disable-animations: true
           working-directory: .
           script: bash app/ci-smoke.sh
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: smoke-test
