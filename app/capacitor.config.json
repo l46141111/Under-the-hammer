@@ -1,0 +1,8 @@
+{
+  "appId": "io.github.l46141111.underthehammer",
+  "appName": "Under the Hammer",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#1A140E"
+  }
+}

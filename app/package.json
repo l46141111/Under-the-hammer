@@ -1,0 +1,21 @@
+{
+  "name": "under-the-hammer-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Under the Hammer 的 Android App（用 Capacitor 把網頁版整個包進 App，離線也能玩）",
+  "license": "MIT",
+  "scripts": {
+    "prepare-www": "node prepare-www.mjs",
+    "sync": "node prepare-www.mjs && cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.0"
+  }
+}
